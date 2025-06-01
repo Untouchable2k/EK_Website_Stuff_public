@@ -275,6 +275,33 @@
             margin-bottom: 10px;
         }
 
+        .info-card2 {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-card2 h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+
+        .info-card3 {
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-card3 h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
         .rewards-card {
             background: linear-gradient(45deg, #28a745, #20c997);
             color: white;
@@ -548,11 +575,8 @@
 
             <!-- Staking Page -->
             <div id="staking-main-page" class="page">
-                <div class="info-card">
                     <h3>Token Staking</h3>
                     <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
-                </div>
-
                 <div class="rewards-card">
                     <h3>Current Rewards</h3>
                     <div class="rewards-amount" id="rewardsAmount">12.45 STAKE</div>
@@ -571,7 +595,15 @@
                         <div class="stat-label">Current APY</div>
                     </div>
                 </div>
+                <div class="info-card3">
+                    <h2>Token Staking</h2>
+                    <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
+                    </div>
 
+                <div class="info-card2">
+                    <h3>NFT Position Info</h3>
+                    <p>Select NFT to get info</p>
+                </div>
                 <div class="form-group">
                     <label>Select Position</label>
                         <select>
@@ -586,14 +618,17 @@
                 </div>
 
                     <button class="btn-success" onclick="depositStake()">Deposit NFT</button><br></br>
+
+                <div class="info-card3">
+                    <h2>Token Withdrawing</h2>
+                    <p>Unstake your Unsiwap NFT tokens below.</p>
+                </div>
+
                        <div class="info-card">
                     <h3>Token Withdrawing</h3>
-                    <p>Collect Rewards or Unstake your Unsiwap NFT tokens below.</p>
+                    <p>Unstake your Unsiwap NFT tokens below.</p>
                 </div>
-                <div class="info-card2">
-                    <h3>Token Withdrawing</h3>
-                    <p>Collect Rewards or Unstake your Unsiwap NFT tokens below.</p>
-                </div><br></br>
+              <br></br>
                 <div class="form-group2">
                     <label>Select NFT to Withdraw</label>
                         <select>
@@ -719,7 +754,7 @@
                 </div>
 
                 <div class="info-card">
-                    <h3>Current Position</h3>
+                    <h3>Current Selected Position</h3>
                     <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
                     <p><strong>Current Liquidity:</strong> $1,250.00</p>
                     <p><strong>Unclaimed Fees:</strong> $12.50</p>
@@ -813,7 +848,7 @@
                 </div>
 
                 <div class="info-card">
-                    <h3>Current Position</h3>
+                    <h3>Current Selected Position</h3>
                     <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
                     <p><strong>Current Liquidity:</strong> $1,250.00</p>
                   <!--  <p><strong>Unclaimed Rewards:</strong> $12.50</p>--> 
@@ -1266,42 +1301,14 @@ function updatePositionInfoMAIN_STAKING() {
     
     
     
-    // Update new total liquidity field
-    const totalLiquidityInput = document.querySelector('#increase input[readonly]');
-    totalLiquidityInput.value = `$${position.currentLiquidity.toFixed(2)}`;
-    
 
 document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
 
 
-
-
-}
-
-
-
-function updatePositionInfoMAIN_STAKING() {
-    const positionSelect = document.querySelector('#staking-main-page select');
-    const selectedPositionId = positionSelect.value;
-    const position = positionData[selectedPositionId];
-    
-    if (!position) return;
-    
-    
-    
-    // Update new total liquidity field
-    const totalLiquidityInput = document.querySelector('#increase input[readonly]');
-    totalLiquidityInput.value = `$${position.currentLiquidity.toFixed(2)}`;
-    
-
-document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
-
-
-    const infoCard = document.querySelector('#staking-main-page .info-card:nth-child(1)');
-    infoCard.innerHTML = `<h3>Current Position</h3>
+    const infoCard = document.querySelector('#staking-main-page .info-card2');
+    infoCard.innerHTML = `<h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
     
 
@@ -1310,14 +1317,17 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
 
 
 
-
-
 function updatePositionInfoMAIN_UNSTAKING() {
-    const positionSelect = document.querySelector('#staking-main-page select');
+    console.log('staking-main-page:', document.querySelector('#staking-main-page'));
+console.log('form-group2:', document.querySelector('#staking-main-page .form-group2'));
+console.log('select:', document.querySelector('#staking-main-page .form-group2 select'));
+    const positionSelect = document.querySelector('#staking-main-page .form-group2 select');
     const selectedPositionId = positionSelect.value;
-    const position = positionData[selectedPositionId];
-    
+    const position = stakingPositionData[selectedPositionId];
     if (!position) return;
+
+
+    console.log("Success position: ",position);
     
     
     
@@ -1325,11 +1335,11 @@ function updatePositionInfoMAIN_UNSTAKING() {
 document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
 
 
-    const infoCard = document.querySelector('#staking-main-page .info-card2');
+    const infoCard = document.querySelector('#staking-main-page .info-card');
 
-    console.log('Found info-card2:', infoCard);
+    console.log('Found info-car12313213d2:', infoCard);
     
-    infoCard.innerHTML = `<h3>Current Position</h3>
+    infoCard.innerHTML = `<h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
         <p><strong>Position Age:</strong> ${position.positionAge}</p>
@@ -1349,7 +1359,7 @@ function updatePositionInfo() {
     // Update current position info card
     const infoCard = document.querySelector('#increase .info-card:nth-child(3)');
     infoCard.innerHTML = `
-        <h3>Current Position</h3>
+        <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
         <p><strong>Unclaimed Fees:</strong> $${position.unclaimedFees.toFixed(2)}</p>
@@ -1387,7 +1397,7 @@ function updateStakePositionInfo() {
     // Update current position info card
     const infoCard = document.querySelector('#stake-increase .info-card:nth-child(3)');
     infoCard.innerHTML = `
-        <h3>Current Position</h3>
+        <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
       <!--  <p><strong>Unclaimed Rewards:</strong> $${position.unclaimedRewards.toFixed(2)}</p> -->
