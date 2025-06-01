@@ -593,7 +593,7 @@
                 <div class="info-card2">
                     <h3>Token Withdrawing</h3>
                     <p>Collect Rewards or Unstake your Unsiwap NFT tokens below.</p>
-                </div>
+                </div><br></br>
                 <div class="form-group2">
                     <label>Select NFT to Withdraw</label>
                         <select>
@@ -1303,7 +1303,7 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
     infoCard.innerHTML = `<h3>Current Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Position Age:</strong> 15 Days</p>
+        <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
     
 
@@ -1334,7 +1334,7 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
     infoCard.innerHTML = `<h3>Current Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Position Age:</strong> 15 Days</p>
+        <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
     
 
@@ -1499,7 +1499,9 @@ function updateStakeDecreasePositionInfo() {
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Total Staked:</strong> $${position.currentLiquidity.toFixed(2)}</p>
         <p><strong>Unclaimed Rewards:</strong> $${position.unclaimedRewards.toFixed(2)}</p>
+        <p><strong>Unclaimed Rewards:</strong> $${position.unclaimedRewards.toFixed(2)}</p>
         <p><strong>APY:</strong> ${position.apy}</p>
+        <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
     
     // Update form labels for token amounts
