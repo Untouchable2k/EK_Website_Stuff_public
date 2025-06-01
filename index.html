@@ -557,6 +557,8 @@
                     <h3>Current Rewards</h3>
                     <div class="rewards-amount" id="rewardsAmount">12.45 STAKE</div>
                     <div class="rewards-usd" id="rewardsUSD">≈ $24.90 USD</div>
+
+                    <button class="btn-primary" onclick="collectRewards()">Collect Rewards</button>
                 </div>
                 <button onclick="calculateNewRewards()">Calculate New Rewards</button>
                 <div class="staking-stats">
@@ -588,7 +590,10 @@
                     <h3>Token Withdrawing</h3>
                     <p>Collect Rewards or Unstake your Unsiwap NFT tokens below.</p>
                 </div>
-
+                <div class="info-card2">
+                    <h3>Token Withdrawing</h3>
+                    <p>Collect Rewards or Unstake your Unsiwap NFT tokens below.</p>
+                </div>
                 <div class="form-group2">
                     <label>Select NFT to Withdraw</label>
                         <select>
@@ -596,10 +601,19 @@
                             <option>UNDAI - UNDai Stablecoin</option>
                         </select>
                 </div>
+                <div class="unstaking-stats">
+                    <div class="stat-card">
+                        <div class="stat-value2" id="TokenAmount">1,250.00</div>
+                        <div class="stat-label2">Total Staked (STAKE)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="APYPercentage">8.75%</div>
+                        <div class="stat-label">Current APY</div>
+                    </div>
+                </div>
 
                 <div class="btn-row">
                     <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
-                    <button class="btn-primary" onclick="collectRewards()">Collect Rewards</button>
                 </div>
 
             </div>
@@ -1268,6 +1282,65 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
 
 
 
+function updatePositionInfoMAIN_STAKING() {
+    const positionSelect = document.querySelector('#staking-main-page select');
+    const selectedPositionId = positionSelect.value;
+    const position = positionData[selectedPositionId];
+    
+    if (!position) return;
+    
+    
+    
+    // Update new total liquidity field
+    const totalLiquidityInput = document.querySelector('#increase input[readonly]');
+    totalLiquidityInput.value = `$${position.currentLiquidity.toFixed(2)}`;
+    
+
+document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
+
+
+    const infoCard = document.querySelector('#staking-main-page .info-card:nth-child(1)');
+    infoCard.innerHTML = `<h3>Current Position</h3>
+        <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
+        <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
+        <p><strong>Position Age:</strong> 15 Days</p>
+    `;
+    
+
+
+}
+
+
+
+
+
+function updatePositionInfoMAIN_UNSTAKING() {
+    const positionSelect = document.querySelector('#staking-main-page select');
+    const selectedPositionId = positionSelect.value;
+    const position = positionData[selectedPositionId];
+    
+    if (!position) return;
+    
+    
+    
+
+document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
+
+
+    const infoCard = document.querySelector('#staking-main-page .info-card2');
+
+    console.log('Found info-card2:', infoCard);
+    
+    infoCard.innerHTML = `<h3>Current Position</h3>
+        <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
+        <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
+        <p><strong>Position Age:</strong> 15 Days</p>
+    `;
+    
+
+
+}
+
 function updatePositionInfo() {
     const positionSelect = document.querySelector('#increase select');
     const selectedPositionId = positionSelect.value;
@@ -1641,8 +1714,8 @@ const positionSelectMainPageWithdrawNFT = document.querySelector('#staking-main-
             positionSelectMainPageWithdrawNFT.appendChild(option);
         });
         
-        positionSelectMainPageWithdrawNFT.addEventListener('change', updatePositionInfoMAIN_STAKING);
-        updatePositionInfoMAIN_STAKING();
+        positionSelectMainPageWithdrawNFT.addEventListener('change', updatePositionInfoMAIN_UNSTAKING);
+        updatePositionInfoMAIN_UNSTAKING();
     }
     
     // Set up position selector for decrease
@@ -1847,18 +1920,6 @@ const positionSelectMainPageWithdrawNFT = document.querySelector('#staking-main-
 
 
 
-
-        function updateStakePercentage(value) {
-            document.getElementById('stakePercentageDisplay').textContent = value + '%';
-            
-            // Update the amounts based on percentage
-            const totalStaked = 1250.00;
-            const withdrawAmount = (totalStaked * value / 100).toFixed(2);
-            const remainingAmount = (totalStaked - withdrawAmount).toFixed(2);
-            
-            document.getElementById('withdrawAmount').value = withdrawAmount + ' STAKE';
-            document.getElementById('remainingStaked').value = remainingAmount + ' STAKE';
-        }
 
         function calculateNewRewards() {
             // This would calculate based on additional staking amount
