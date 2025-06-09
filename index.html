@@ -187,7 +187,7 @@
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 10px;
+            border-radius: 10px;#
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
@@ -2567,6 +2567,12 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
         const selectedPositionId = positionSelect.value;
         const position = stakingPositionData[selectedPositionId];
         
+    const swapSection = document.getElementById('stake-increase');
+    if (!swapSection || !swapSection.contains(inputElement)) {
+        console.log("Not in stake-increase section, returning early");
+        return;
+    }
+
         if (!position) return;
         
         // Determine which token we're working with
@@ -2591,22 +2597,26 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
     // Add click handler with proper context
     maxButton.addEventListener('click', function() {
         const positionSelect = document.querySelector('#increase select');
+
+    const swapSection = document.getElementById('increase');
+    if (!swapSection || !swapSection.contains(inputElement)) {
+        console.log("Not in increase section, returning early");
+        return;
+    }
         const selectedPositionId = positionSelect.value;
         const position = positionData[selectedPositionId];
-        
         if (!position) return;
         
         // Determine which token we're working with
         const label = inputElement.closest('.form-group').querySelector('label');
         let currentTokenSymbol = tokenSymbol;
         let maxAmount = 0;
-        
         if (label && label.textContent.includes(position.tokenA)) {
             currentTokenSymbol = position.tokenA;
-            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol) + position.unclaimedFeesTokenA;
         } else if (label && label.textContent.includes(position.tokenB)) {
             currentTokenSymbol = position.tokenB;
-            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol) + position.unclaimedFeesTokenB;
         } else {
             maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
         }
@@ -2616,6 +2626,13 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
 
     // Add click handler with proper context
     maxButton.addEventListener('click', function() {
+
+    const swapSection = document.getElementById('swap');
+    if (!swapSection || !swapSection.contains(inputElement)) {
+        console.log("Not in swap section, returning early");
+        return;
+    }
+        console.log("this!")
         // Get the currently selected token from the dropdown
         const fromTokenSelect = document.getElementById('fromToken');
         const tokenSelected = fromTokenSelect.value; // This will be 'ETH', 'USDC', etc.
@@ -2625,17 +2642,26 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
         
         // Set the max amount in the input field
         setMaxAmount2(inputElement, tokenSelected, maxAmount);
+
+        console.log("this! !: ", maxAmount);
     });
 
 
 
     // Add click handler for MAX button
     maxButton.addEventListener('click', function() {
+
+
+    const createSection = document.getElementById('create');
+    if (!createSection || !createSection.contains(inputElement)) {
+        console.log("Not in create section, returning early");
+        return;
+    }
+
     // Get the Token A select element specifically inside the #create page
     const tokenSelect = document.querySelector('#create .form-row .form-group:nth-child(1) select');
-        const label = inputElement.closest('.form-group').querySelector('label');
-   
-        console.log("LABEL LABEL: ",label);
+//const label = inputElement.closest('form-group').querySelector('label');
+const label = inputElement.closest('.form-group').querySelector('label');
                 // Extract the text from the label element
             const labelText = label.textContent;
 
@@ -2660,18 +2686,22 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
         // Set the max amount in the input field
         setMaxAmount2(inputElement, selectedToken, maxAmount);
         }
-        if(token){  console.log("Amount A Activated!");
-
-        const maxAmount = getMaxAmountForTokenList(token);
-        // Set the max amount in the input field
-        setMaxAmount2(inputElement, token, maxAmount);
-
-        }
     });
 
 
 
  maxButton.addEventListener('click', function() {
+
+
+
+    const createSection = document.getElementById('create');
+    if (!createSection || !createSection.contains(inputElement)) {
+        console.log("Not in create section, returning early");
+        return;
+    }
+
+
+
     // Get the Token A select element specifically inside the #create page
     const tokenSelect = document.querySelector('#create .form-row .form-group:nth-child(2) select');
 
@@ -2690,7 +2720,7 @@ const label = inputElement.closest('.form-group').querySelector('label');
         const maxAmount = getMaxAmountForTokenList(selectedToken);
 
         if (label && label.textContent.trim() === 'Amount B') {
-            console.log("Amount A Activated!");
+            console.log("Amount B Activated!");
         // Set the max amount in the input field
         setMaxAmount2(inputElement, selectedToken, maxAmount);
         }
