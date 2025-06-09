@@ -474,6 +474,55 @@
   border: none;
   letter-spacing: 0.5px;
 }
+
+
+
+
+
+
+
+
+
+
+
+.token-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.token-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.token-symbol {
+    font-weight: bold;
+    color: #333;
+}
+
+.token-address {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.periods-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.periods-table th, .periods-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.periods-table th {
+    background-color: #f8f9fa;
+}
         
     </style>
 </head>
@@ -492,6 +541,8 @@
             <button class="nav-tab" onclick="switchTab('staking-main-page')">Staking</button>
             <button class="nav-tab" onclick="switchTab('stake-increase')">Stake Increase</button>
             <button class="nav-tab" onclick="switchTab('stake-decrease')">Stake Decrease</button>
+            <button class="nav-tab" onclick="switchTab('settings')">Settings</button>
+            <button class="nav-tab" onclick="switchTab('staking-management')">Stake Management</button>
         </div>
         <center>
         <div class="wallet-section">
@@ -502,6 +553,108 @@
         </div>
         </center>
         <div class="content">
+
+            <!-- Settings Page -->
+            <div id="settings" class="page">
+                <div class="info-card">
+                    <h3>System Settings</h3>
+                    <p>Configure minimum staking amounts and user holding requirements for the platform. To prevent Spam Attacks!</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-form">
+                        <h3>🔒 Minimum Staking Configuration</h3>
+                        <p>Set the minimum amount of tokenA required for users Staked Position. Units is Wei</p>
+                        
+                        <div class="form-group">
+                            <label>Minimum Staking Amount</label>
+                            <div class="input-group">
+                                <input type="number" id="minStaking" placeholder="0" step="1" min="0">
+                                <div class="unit">Tokens</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="saveMinStaking()">Save Minimum Staking</button>
+                    </div>
+
+                    <div class="settings-form">
+                        <h3>💰 Minimum User Holdings</h3>
+                        <p>Set the minimum tokenA required for user to see a NFT position held in wallet. To prevent spam attacks! Units is Wei</p>
+                        
+                        <div class="form-group">
+                            <label>Minimum Holdings Required</label>
+                            <div class="input-group">
+                                <input type="number" id="minUserHoldings" placeholder="0" step="1" min="0">
+                                <div class="unit">Tokens</div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="saveMinUserHoldings()">Save Minimum Holdings</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Staking Management Page -->
+            <div id="staking-management" class="page">
+                <div class="info-card">
+                    <h3>Staking Management</h3>
+                    <p>Manage reward tokens and configure staking reward periods for the platform.</p>
+                </div>
+
+                <div class="staking-management">
+                    <div class="management-card">
+                        <h3>🪙 Add Reward Token</h3>
+                        <p>Add new ERC20 tokens to be distributed as staking rewards.</p>
+                        
+                        <div class="form-group">
+                            <label>Reward Token Contract Address</label>
+                            <input type="text" id="rewardTokenAddress" class="address-input" 
+                                   placeholder="0x742d35Cc6634C0532925a3b8D1C07E8DEa95C7C4" 
+                                   pattern="^0x[a-fA-F0-9]{40}$">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Token Symbol (Optional)</label>
+                            <input type="text" id="rewardTokenSymbol" placeholder="REWARD" maxlength="10">
+                        </div>
+                        
+                        
+                        <button class="btn-success" onclick="addRewardToken()">Add Reward Token</button>
+                        
+                        <div class="reward-tokens-list" id="rewardTokensList">
+                            <h4>Current Reward Tokens:</h4>
+                            <div id="rewardTokensContainer">
+                                <p style="color: #6c757d; font-style: italic;">No reward tokens added yet.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>🚀 Start Reward Period</h3>
+                        <p>Configure and start a new reward distribution period for stakers.</p>
+                        
+                        <div class="form-group">
+                            <label>Select Reward Token</label>
+                            <select id="selectedRewardToken">
+                                <option value="">Select a reward token...</option>
+                            </select>
+                        </div>
+                        
+                        
+                        <button class="btn-primary" onclick="startRewardPeriod()">Start Reward Period</button>
+                    </div>
+
+                    <div class="management-card">
+                        <h3>📊 Active Reward Periods</h3>
+                        <p>Monitor and manage currently active reward distribution periods.</p>
+                        
+                        <div id="activePeriodsContainer">
+                            <p style="color: #6c757d; font-style: italic;">No active reward periods.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- Swap Page -->
             <div id="swap" class="page active">
                 <div class="info-card">
@@ -575,20 +728,23 @@
 
             <!-- Staking Page -->
             <div id="staking-main-page" class="page">
-                    <h3>Token Staking</h3>
+                <div class="info-card3">
+                    <h2>Token Staking</h2>
                     <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
+                    </div>
                 <div class="rewards-card">
                     <h3>Current Rewards</h3>
-                    <div class="rewards-amount" id="rewardsAmount">12.45 STAKE</div>
-                    <div class="rewards-usd" id="rewardsUSD">≈ $24.90 USD</div>
+                    <div class="rewards-amount" id="rewardsAmount">0.01 ETH & 10 TokenA</div>
+                    <div class="rewards-usd" id="rewardsUSD">≈ $1.90 USD</div>
 
                     <button class="btn-primary" onclick="collectRewards()">Collect Rewards</button>
                 </div>
                 <button onclick="calculateNewRewards()">Calculate New Rewards</button>
                 <div class="staking-stats">
                     <div class="stat-card">
-                        <div class="stat-value">1,250.00</div>
-                        <div class="stat-label">Total Staked (STAKE)</div>
+                        <div class="stat-value" id="totalStakedT1">1.0120213 ETH </div>
+                        <div class="stat-value" id ="totalStakedT2">15,000 TokenA</div>
+                        <div class="stat-label">Your Total Staked</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="APYPercentage">8.75%</div>
@@ -617,7 +773,7 @@
                     <input type="text" id="estimatedRewards" value="9.06 STAKE" readonly style="background: #f8f9fa;">
                 </div>
 
-                    <button class="btn-success" onclick="depositStake()">Deposit NFT</button><br></br>
+                    <button class="btn-success" onclick="depositStake()">Deposit NFT</button><br></br><br></br>
 
                 <div class="info-card3">
                     <h2>Token Withdrawing</h2>
@@ -635,16 +791,6 @@
                             <option>UNSTAKE - UNStaking Token</option>
                             <option>UNDAI - UNDai Stablecoin</option>
                         </select>
-                </div>
-                <div class="unstaking-stats">
-                    <div class="stat-card">
-                        <div class="stat-value2" id="TokenAmount">1,250.00</div>
-                        <div class="stat-label2">Total Staked (STAKE)</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="APYPercentage">8.75%</div>
-                        <div class="stat-label">Current APY</div>
-                    </div>
                 </div>
                     <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
 
@@ -762,19 +908,15 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Add ETH</label>
+                        <label>Add Total ETH</label>
                         <input type="number" placeholder="0.0" step="0.000001">
                     </div>
                     <div class="form-group">
-                        <label>Add USDC</label>
+                        <label>Add Total USDC</label>
                         <input type="number" placeholder="0.0" step="0.000001">
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Increase Amount</label>
-                    <input type="number" placeholder="Enter USD value" step="0.01">
-                </div>
+                <b>Adding Liquidity Automatically uses your unclaimed fees in the deposit.</b><br></br>
 
                 <div class="form-group">
                     <label>New Total Liquidity</label>
@@ -823,6 +965,7 @@
                         <input type="text" value="312.50 USDC" readonly style="background: #f8f9fa;">
                     </div>
                 </div>
+<b>Remving Liquidity Automatically claims your unclaimed fees.</b><br></br>
 
                 <div class="form-group">
                     <label>Fees to Claim</label>
@@ -865,10 +1008,6 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Increase Amount</label>
-                    <input type="number" placeholder="Enter USD value" step="0.01">
-                </div>
 
                 <div class="form-group">
                     <label>New Total Liquidity</label>
@@ -919,21 +1058,86 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Rewards to Claim</label>
-                    <input type="text" value="$12.50" readonly style="background: #f8f9fa;">
-                </div>
 
-                <div class="btn-row">
                     <button class="btn-primary" onclick="decreaseStaking()">Decrease Liquidity on Staked NFT</button>
-                  <!--  <button class="btn-primary" onclick="collectStakeRewards()">Collect Rewards Only</button>
-                    <button class="btn-success" onclick="compoundRewards()">Compound Rewards</button> -->
-                </div>
+
             </div>
         </div>
     </div>
 
     <script>
+
+
+/**
+ * Fills in the Current Reward Tokens and Active Reward Periods sections
+ */
+function populateStakingManagementData() {
+    // Mock data - replace with actual data from your contract/API
+    const mockRewardTokens = [
+        { address: "0x742d35Cc6634C0532925a3b8D1C07E8DEa95C7C4", symbol: "REWARD" },
+        { address: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", symbol: "UNI" },
+        { address: "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9", symbol: "AAVE" }
+    ];
+
+    const mockActivePeriods = [
+        { token: "REWARD", startTime: "2023-05-15", endTime: "2023-06-15", totalRewards: "10,000 REWARD" },
+        { token: "UNI", startTime: "2023-05-20", endTime: "2023-07-20", totalRewards: "5,000 UNI" }
+    ];
+
+    // Populate Reward Tokens
+    const rewardTokensContainer = document.getElementById('rewardTokensContainer');
+    const tokenSelect = document.getElementById('selectedRewardToken');
+    
+    if (mockRewardTokens.length === 0) {
+        rewardTokensContainer.innerHTML = '<p style="color: #6c757d; font-style: italic;">No reward tokens added yet.</p>';
+    } else {
+        rewardTokensContainer.innerHTML = '<ul class="token-list">' + 
+            mockRewardTokens.map(token => 
+                `<li>
+                    <span class="token-symbol">${token.symbol}</span>
+                    <span class="token-address">${token.address}</span>
+                </li>`
+            ).join('') + '</ul>';
+        
+        // Also populate the select dropdown
+        tokenSelect.innerHTML = '<option value="">Select a reward token...</option>' +
+            mockRewardTokens.map(token => 
+                `<option value="${token.address}">${token.symbol} (${token.address})</option>`
+            ).join('');
+    }
+
+    // Populate Active Periods
+    const activePeriodsContainer = document.getElementById('activePeriodsContainer');
+    
+    if (mockActivePeriods.length === 0) {
+        activePeriodsContainer.innerHTML = '<p style="color: #6c757d; font-style: italic;">No active reward periods.</p>';
+    } else {
+        activePeriodsContainer.innerHTML = `
+            <table class="periods-table">
+                <thead>
+                    <tr>
+                        <th>Token</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Total Rewards</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${mockActivePeriods.map(period => `
+                        <tr>
+                            <td>${period.token}</td>
+                            <td>${period.startTime}</td>
+                            <td>${period.endTime}</td>
+                            <td>${period.totalRewards}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+}
+
+
         let walletConnected = false;
         let userAddress = null;
 
@@ -1222,7 +1426,10 @@ const positionData = {
         tokenA: "ETH",
         tokenB: "USDC",
         currentLiquidity: 1250.00,
-        unclaimedFees: 12.50,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
+        unclaimedFeesTokenA: 12.50,
+        unclaimedFeesTokenB: 12.50,
         tokenAIcon: "E",
         tokenBIcon: "U"
     },
@@ -1233,7 +1440,10 @@ const positionData = {
         tokenA: "DAI",
         tokenB: "USDC",
         currentLiquidity: 850.00,
-        unclaimedFees: 3.25,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
+        unclaimedFeesTokenA: 12.50,
+        unclaimedFeesTokenB: 12.50,
         tokenAIcon: "D",
         tokenBIcon: "U"
     },
@@ -1244,7 +1454,10 @@ const positionData = {
         tokenA: "WBTC",
         tokenB: "ETH",
         currentLiquidity: 2100.00,
-        unclaimedFees: 28.75,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
+        unclaimedFeesTokenA: 12.50,
+        unclaimedFeesTokenB: 12.50,
         tokenAIcon: "W",
         tokenBIcon: "E"
     }
@@ -1259,6 +1472,8 @@ const stakingPositionData = {
         tokenA: "ETH",
         tokenB: "USDC",
         currentLiquidity: 1250.00,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
         unclaimedRewards: 12.50,
         apy: "8.75%",
         tokenAIcon: "E",
@@ -1271,6 +1486,8 @@ const stakingPositionData = {
         tokenA: "DAI",
         tokenB: "USDC",
         currentLiquidity: 850.00,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
         unclaimedRewards: 5.25,
         apy: "12.1%",
         tokenAIcon: "D",
@@ -1283,6 +1500,8 @@ const stakingPositionData = {
         tokenA: "WBTC",
         tokenB: "ETH",
         currentLiquidity: 2100.00,
+        currentTokenA: 1.00,
+        currentTokenB: 2000.00,
         unclaimedRewards: 18.75,
         apy: "5.2%",
         tokenAIcon: "W",
@@ -1309,6 +1528,8 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
     infoCard.innerHTML = `<h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
+        <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+
     `;
     
 
@@ -1342,6 +1563,8 @@ document.getElementById('estimatedRewards').value = "12.1231232150 STAKE";
     infoCard.innerHTML = `<h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
+         <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+
         <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
     
@@ -1362,13 +1585,33 @@ function updatePositionInfo() {
         <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Unclaimed Fees:</strong> $${position.unclaimedFees.toFixed(2)}</p>
+        <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+
+        <p><strong>Unclaimed Fees:</strong> ${position.unclaimedFeesTokenA.toFixed(4)} ${position.tokenA} & ${position.unclaimedFeesTokenB.toFixed(4)} ${position.tokenB}</p>
+
     `;
+    // Clear input values when position changes
+    const inputs = document.querySelectorAll('#increase input[type="number"]');
+    inputs.forEach(input => input.value = '');
     
+}
+
+function updateTotalLiqIncrease(){
+
+    const positionSelect = document.querySelector('#increase select');
+    const selectedPositionId = positionSelect.value;
+    const position = positionData[selectedPositionId];
+    
+    if (!position) return;
+    var x=0;
+    var inputTokenA = 0;
+    var inputTokenB = 0;
     // Update form labels and placeholders
     const formGroups = document.querySelectorAll('#increase .form-row .form-group');
     formGroups.forEach(group => {
         const label = group.querySelector('label');
+        const input = group.querySelector('input'); // Get the input element
+
         if (label) {
             if (label.textContent.startsWith('Add ')) {
                 const isFirstToken = label === formGroups[0].querySelector('label');
@@ -1376,15 +1619,71 @@ function updatePositionInfo() {
                 label.textContent = `Add ${tokenSymbol}`;
             }
         }
+        // Get the input value
+        if (input) {
+            const inputValue = input.value;
+            console.log("input value is: ",inputValue);
+            console.log(`${label?.textContent}: ${inputValue}`);
+          if(x==0){
+                inputTokenA = parseFloat(inputValue) || 0; // Convert to number
+            } else {
+                inputTokenB = parseFloat(inputValue) || 0; // Convert to number
+            }
+            // Or do something with the value
+            // someFunction(inputValue);
+        }
+        x = x+1;
     });
     
     // Update new total liquidity field
     const totalLiquidityInput = document.querySelector('#increase input[readonly]');
-    totalLiquidityInput.value = `$${position.currentLiquidity.toFixed(2)}`;
+    totalLiquidityInput.value = `${(position.currentTokenA+inputTokenA).toFixed(4)} ${position.tokenA} & ${(position.currentTokenB+inputTokenB).toFixed(4)} ${position.tokenB}`;
+
+}
+
+function updateTotalLiqIncreaseSTAKING(){
+
+    const positionSelect = document.querySelector('#stake-increase select');
+    const selectedPositionId = positionSelect.value;
+    const position = stakingPositionData[selectedPositionId];
+    console.log("Postion Staking Udpate Liq: ", position);
+    if (!position) return;
+    var x=0;
+    var inputTokenA = 0;
+    var inputTokenB = 0;
+    // Update form labels and placeholders
+    const formGroups = document.querySelectorAll('#stake-increase .form-row .form-group');
+    formGroups.forEach(group => {
+        const label = group.querySelector('label');
+        const input = group.querySelector('input'); // Get the input element
+
+        if (label) {
+            if (label.textContent.startsWith('Add ')) {
+                const isFirstToken = label === formGroups[0].querySelector('label');
+                const tokenSymbol = isFirstToken ? position.tokenA : position.tokenB;
+                label.textContent = `Add ${tokenSymbol}`;
+            }
+        }
+        // Get the input value
+        if (input) {
+            const inputValue = input.value;
+            console.log("input value is: ",inputValue);
+            console.log(`${label?.textContent}: ${inputValue}`);
+          if(x==0){
+                inputTokenA = parseFloat(inputValue) || 0; // Convert to number
+            } else {
+                inputTokenB = parseFloat(inputValue) || 0; // Convert to number
+            }
+            // Or do something with the value
+            // someFunction(inputValue);
+        }
+        x = x+1;
+    });
     
-    // Clear input values when position changes
-    const inputs = document.querySelectorAll('#increase input[type="number"]');
-    inputs.forEach(input => input.value = '');
+    // Update new total liquidity field
+    const totalLiquidityInput = document.querySelector('#stake-increase input[readonly]');
+    totalLiquidityInput.value = `${(position.currentTokenA+inputTokenA).toFixed(4)} ${position.tokenA} & ${(position.currentTokenB+inputTokenB).toFixed(4)} ${position.tokenB}`;
+
 }
 
 function updateStakePositionInfo() {
@@ -1400,6 +1699,8 @@ function updateStakePositionInfo() {
         <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Current Liquidity:</strong> $${position.currentLiquidity.toFixed(2)}</p>
+        <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+
       <!--  <p><strong>Unclaimed Rewards:</strong> $${position.unclaimedRewards.toFixed(2)}</p> -->
         <p><strong>APY:</strong> ${position.apy}</p>
     `;
@@ -1441,8 +1742,8 @@ function updateDecreasePositionInfo() {
         <h3>Position Details</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Total Liquidity:</strong> ${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Unclaimed Fees:</strong> ${position.unclaimedFees.toFixed(2)}</p>
-        <p><strong>Position Age:</strong> ${position.positionAge}</p>
+        <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+        <p><strong>Unclaimed Fees:</strong> ${position.unclaimedFeesTokenA.toFixed(4)} ${position.tokenA} & ${position.unclaimedFeesTokenB.toFixed(4)} ${position.tokenB}</p>
     `;
     
     // Update form labels for token amounts
@@ -1456,9 +1757,15 @@ function updateDecreasePositionInfo() {
     });
     
     // Update fees to claim field
-    const feesInput = document.querySelector('#decrease .form-group:last-child input');
-    if (feesInput) {
-        feesInput.value = `${position.unclaimedFees.toFixed(2)}`;
+const feesInput = Array.from(document.querySelectorAll('#decrease .form-group'))
+    .find(group => group.querySelector('label')?.textContent === 'Fees to Claim')
+    ?.querySelector('input');    console.log("fees input: ", feesInput);
+    if (feesInput) {       
+        console.log("changing fee input!");
+        feesInput.value = `${position.unclaimedFeesTokenA.toFixed(4)} ${position.tokenA} & ${position.unclaimedFeesTokenB.toFixed(4)} ${position.tokenB}`
+
+        console.log("changing fee input! feeInput.value = ",feesInput.value  );
+        //feesInput.value = `${position.unclaimedFees.toFixed(2)}`;
     }
     
     // Force recalculate amounts with current percentage
@@ -1466,13 +1773,17 @@ function updateDecreasePositionInfo() {
     if (slider) {
         // Trigger the calculation manually
         const percentage = parseFloat(slider.value) / 100;
-        const removeAmount = position.currentLiquidity * percentage;
+        const removeAmount = percentage;
         
         // Calculate token amounts (simplified - in reality would depend on current pool ratios)
-        const tokenAAmount = removeAmount * 0.5;
-        const tokenBAmount = removeAmount * 0.5;
+        const tokenAAmount = position.currentTokenA * removeAmount;
+        const tokenBAmount = position.currentTokenB * removeAmount;
         
-        // Update token receive inputs with correct formatting
+        const tokenInputs = document.querySelectorAll('#decrease .form-row input');
+        tokenInputs[0].value = `${(tokenAAmount).toFixed(6)} ${position.tokenA}`;
+        tokenInputs[1].value = `${(tokenBAmount).toFixed(6)} ${position.tokenB}`;
+        console.log("TokenAAmount: ", tokenAAmount);
+        /* Update token receive inputs with correct formatting
         const tokenInputs = document.querySelectorAll('#decrease .form-row input');
         if (tokenInputs.length >= 2) {
             // Format TokenA based on token type
@@ -1489,6 +1800,7 @@ function updateDecreasePositionInfo() {
                 tokenInputs[1].value = `${tokenBAmount.toFixed(2)} ${position.tokenB}`;
             }
         }
+            */
     }
 }
 
@@ -1506,7 +1818,8 @@ function updateStakeDecreasePositionInfo() {
         <h3>Position Details</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
         <p><strong>Total Staked:</strong> $${position.currentLiquidity.toFixed(2)}</p>
-        <p><strong>Unclaimed Rewards:</strong> $${position.unclaimedRewards.toFixed(2)}</p>
+        <p><strong>Total Liquidity:</strong> ${position.currentTokenA.toFixed(4)} ${position.tokenA} & ${position.currentTokenB.toFixed(4)} ${position.tokenB}</p>
+
         <p><strong>APY:</strong> ${position.apy}</p>
         <p><strong>Position Age:</strong> ${position.positionAge}</p>
     `;
@@ -1551,32 +1864,23 @@ function updateStakePercentage(value) {
     const position = stakingPositionData[selectedPositionId];
     
     if (!position) return;
-    
+        console.log("Value = ",value);
     const percentage = parseFloat(value) / 100;
-    const removeAmount = position.currentLiquidity * percentage;
+    const removeAmount =  percentage;
     
     // Calculate token amounts (simplified - in reality would depend on current pool ratios)
-    const tokenAAmount = removeAmount * 0.5;
-    const tokenBAmount = removeAmount * 0.5;
+        // Calculate token amounts (simplified - in reality would depend on current pool ratios)
+        const tokenAAmount = position.currentTokenA * removeAmount;
+        const tokenBAmount = position.currentTokenB * removeAmount;
     
-    // Update token receive inputs - be more specific with selectors
-    const tokenAInput = document.querySelector('#stake-decrease .form-row .form-group:first-child input');
-    const tokenBInput = document.querySelector('#stake-decrease .form-row .form-group:last-child input');
-    
-    if (tokenAInput && tokenBInput) {
-        // Format TokenA based on token type
-        if (position.tokenA === 'ETH' || position.tokenA === 'WBTC') {
-            tokenAInput.value = `${(tokenAAmount / 2000).toFixed(6)} ${position.tokenA}`;
-        } else {
-            tokenAInput.value = `${tokenAAmount.toFixed(2)} ${position.tokenA}`;
-        }
+
         
-        // Format TokenB based on token type
-        if (position.tokenB === 'ETH' || position.tokenB === 'WBTC') {
-            tokenBInput.value = `${(tokenBAmount / 2000).toFixed(6)} ${position.tokenB}`;
-        } else {
-            tokenBInput.value = `${tokenBAmount.toFixed(2)} ${position.tokenB}`;
-        }
+    // Update token receive inputs
+    const tokenInputs = document.querySelectorAll('#stake-decrease .form-row input');
+    if (tokenInputs.length >= 2) {
+      
+        tokenInputs[0].value = `${(tokenAAmount).toFixed(6)} ${position.tokenA}`;
+        tokenInputs[1].value = `${(tokenBAmount).toFixed(6)} ${position.tokenB}`;
     }
 }
 
@@ -1605,30 +1909,23 @@ function updatePercentage(value) {
     const position = positionData[selectedPositionId];
     
     if (!position) return;
-    
+    console.log("Value = ",value);
     const percentage = parseFloat(value) / 100;
-    const removeAmount = position.currentLiquidity * percentage;
+    const removeAmount =  percentage;
     
     // Calculate token amounts (simplified - in reality would depend on current pool ratios)
-    const tokenAAmount = removeAmount * 0.5; // Simplified calculation
-    const tokenBAmount = removeAmount * 0.5; // Simplified calculation
+        // Calculate token amounts (simplified - in reality would depend on current pool ratios)
+        const tokenAAmount = position.currentTokenA * removeAmount;
+        const tokenBAmount = position.currentTokenB * removeAmount;
     
+
+        
     // Update token receive inputs
     const tokenInputs = document.querySelectorAll('#decrease .form-row input');
     if (tokenInputs.length >= 2) {
-        // Format TokenA based on token type
-        if (position.tokenA === 'ETH' || position.tokenA === 'WBTC') {
-            tokenInputs[0].value = `${(tokenAAmount / 2000).toFixed(6)} ${position.tokenA}`; // Assuming ~$2000 per ETH/WBTC
-        } else {
-            tokenInputs[0].value = `${tokenAAmount.toFixed(2)} ${position.tokenA}`;
-        }
-        
-        // Format TokenB based on token type
-        if (position.tokenB === 'ETH' || position.tokenB === 'WBTC') {
-            tokenInputs[1].value = `${(tokenBAmount / 2000).toFixed(6)} ${position.tokenB}`; // Assuming ~$2000 per ETH/WBTC
-        } else {
-            tokenInputs[1].value = `${tokenBAmount.toFixed(2)} ${position.tokenB}`;
-        }
+      
+        tokenInputs[0].value = `${(tokenAAmount).toFixed(6)} ${position.tokenA}`;
+        tokenInputs[1].value = `${(tokenBAmount).toFixed(6)} ${position.tokenB}`;
     }
 }
 
@@ -1640,8 +1937,9 @@ function calculateNewTotal() {
     const selectedPositionId = positionSelect.value;
     const position = positionData[selectedPositionId];
     
+    console.log("position Data12: ", position);
     if (!position) return;
-    
+    console.log("work work");
     const increaseInput = document.querySelector('#increase input[placeholder="Enter USD value"]');
     const totalLiquidityInput = document.querySelector('#increase input[readonly]');
     
@@ -1695,8 +1993,22 @@ document.addEventListener('DOMContentLoaded', function() {
         positionSelect.addEventListener('change', updatePositionInfo);
         updatePositionInfo();
     }
+    // Add event listeners to both inputs in the form-row
+    const ethInput = document.querySelector('#increase .form-row .form-group:first-child input');
+    const usdcInput = document.querySelector('#increase .form-row .form-group:last-child input');
+    
+
+    if (ethInput) {
+        ethInput.addEventListener('input', updateTotalLiqIncrease);
+        updateTotalLiqIncrease();
+    }
+    
+    if (usdcInput) {
+        usdcInput.addEventListener('input', updateTotalLiqIncrease);
+    }
 
 
+    
 
     const positionSelect2 = document.querySelector('#staking-main-page select');
     if (positionSelect2) {
@@ -1774,6 +2086,7 @@ const positionSelectMainPageWithdrawNFT = document.querySelector('#staking-main-
     
     // Add event listeners for calculations
     const increaseInput = document.querySelector('#increase input[placeholder="Enter USD value"]');
+    console.log("Checking increaseInput: ", increaseInput);
     if (increaseInput) {
         increaseInput.addEventListener('input', calculateNewTotal);
     }
@@ -1810,11 +2123,117 @@ const positionSelectMainPageWithdrawNFT = document.querySelector('#staking-main-
             updateStakePercentage(this.value);
         });
     }
+
+
+
+    // Add event listeners to both inputs in the form-row
+    const ethInput2 = document.querySelector('#stake-increase .form-row .form-group:first-child input');
+    const usdcInput2 = document.querySelector('#stake-increase .form-row .form-group:last-child input');
+    
+    console.log("Eth input2: ", ethInput2);
+    if (ethInput2) {
+        ethInput2.addEventListener('input', updateTotalLiqIncreaseSTAKING);
+        updateTotalLiqIncreaseSTAKING();
+    }
+    
+    if (usdcInput2) {
+        usdcInput2.addEventListener('input', updateTotalLiqIncreaseSTAKING);
+    }
+
+
+    populateStakingManagementData();
+
+  loadSettings();
 });
 
 
 
+// Settings object to hold our values
+const appSettings = {
+  minStaking: 0,
+  minUserHoldings: 0
+};
 
+
+/**
+ * Saves the minimum staking amount to localStorage
+ */
+function saveMinStaking() {
+  const minStakingInput = document.getElementById('minStaking');
+  const value = minStakingInput.value.trim();
+  
+  if (!value || isNaN(value) || parseFloat(value) < 0) {
+    showAlert('Please enter a valid positive number', 'error');
+    return;
+  }
+  
+  // Save to our settings object
+  appSettings.minStaking = value;
+  
+  // Save to localStorage
+  localStorage.setItem('stakingSettings', JSON.stringify(appSettings));
+  
+  showAlert(`Minimum staking amount set to ${value} tokens`, 'success');
+}
+
+/**
+ * Saves the minimum user holdings to localStorage
+ */
+function saveMinUserHoldings() {
+  const minHoldingsInput = document.getElementById('minUserHoldings');
+  const value = minHoldingsInput.value.trim();
+  
+  if (!value || isNaN(value) || parseFloat(value) < 0) {
+    showAlert('Please enter a valid positive number', 'error');
+    return;
+  }
+  
+  // Save to our settings object
+  appSettings.minUserHoldings = value;
+  
+  // Save to localStorage
+  localStorage.setItem('stakingSettings', JSON.stringify(appSettings));
+  
+  showAlert(`Minimum user holdings set to ${value} tokens`, 'success');
+}
+
+/**
+ * Loads settings from localStorage and updates the form
+ */
+function loadSettings() {
+  const savedSettings = localStorage.getItem('stakingSettings');
+  
+  if (savedSettings) {
+    try {
+      const settings = JSON.parse(savedSettings);
+      
+      // Update our appSettings object
+      appSettings.minStaking = settings.minStaking || 0;
+      appSettings.minUserHoldings = settings.minUserHoldings || 0;
+      
+      // Update the form inputs
+      document.getElementById('minStaking').value = appSettings.minStaking;
+      document.getElementById('minUserHoldings').value = appSettings.minUserHoldings;
+      
+    } catch (e) {
+      console.error('Error loading settings:', e);
+    }
+  }
+}
+
+/**
+ * Simple alert notification
+ */
+function showAlert(message, type = 'info') {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type}`;
+  alertDiv.textContent = message;
+  
+  const settingsPage = document.getElementById('settings');
+  settingsPage.insertBefore(alertDiv, settingsPage.firstChild);
+  
+  setTimeout(() => alertDiv.remove(), 5000);
+}
 
 
 
