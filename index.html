@@ -523,6 +523,45 @@
 .periods-table th {
     background-color: #f8f9fa;
 }
+
+
+
+
+
+
+
+
+
+
+.wallet-balances {
+    margin-bottom: 20px;
+}
+
+.balances-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.balance-item {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.token-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.token-amount {
+    font-size: 1.1em;
+    color: #212529;
+}
         
     </style>
 </head>
@@ -657,6 +696,17 @@
             </div>
             <!-- Swap Page -->
             <div id="swap" class="page active">
+
+
+                <!-- Wallet Balances Display -->
+                <div class="wallet-balances">
+                    <h3>Wallet Balances</h3>
+                    <div id="walletBalancesDisplay3" class="balances-grid">
+                        <!-- Will be populated by JavaScript -->
+                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                    </div>
+                </div>
+
                 <div class="info-card">
                     <h3>Token Swap</h3>
                     <p>Exchange one token for another at current market rates with minimal slippage.</p>
@@ -804,6 +854,15 @@
                     <p>Provide liquidity to earn fees by depositing token pairs into liquidity pools.</p>
                 </div>
 
+                <!-- Wallet Balances Display -->
+                <div class="wallet-balances">
+                    <h3>Wallet Balances</h3>
+                    <div id="walletBalancesDisplay4" class="balances-grid">
+                        <!-- Will be populated by JavaScript -->
+                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Token A</label>
@@ -891,6 +950,15 @@
                     <h3>Increase Liquidity</h3>
                     <p>Add more funds to your existing liquidity position to earn more fees.</p>
                 </div>
+                <!-- Wallet Balances Display -->
+                <div class="wallet-balances">
+                    <h3>Wallet Balances</h3>
+                    <div id="walletBalancesDisplay" class="balances-grid">
+                        <!-- Will be populated by JavaScript -->
+                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                    </div>
+                </div>
+
 
                 <div class="form-group">
                     <label>Select Position</label>
@@ -983,6 +1051,14 @@
                     <p>Add more funds to your existing staking position to earn more rewards.</p>
                 </div>
 
+                <!-- Wallet Balances Display -->
+                <div class="wallet-balances">
+                    <h3>Wallet Balances</h3>
+                    <div id="walletBalancesDisplay2" class="balances-grid">
+                        <!-- Will be populated by JavaScript -->
+                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                    </div>
+                </div>
                 <div class="form-group">
                     <label>Select Position</label>
                     <select>
@@ -1580,7 +1656,7 @@ function updatePositionInfo() {
     if (!position) return;
     
     // Update current position info card
-    const infoCard = document.querySelector('#increase .info-card:nth-child(3)');
+    const infoCard = document.querySelector('#increase .info-card:nth-child(4)');
     infoCard.innerHTML = `
         <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
@@ -1595,45 +1671,42 @@ function updatePositionInfo() {
     inputs.forEach(input => input.value = '');
     
 }
-
-function updateTotalLiqIncrease(){
-
+function updateTotalLiqIncrease() {
     const positionSelect = document.querySelector('#increase select');
     const selectedPositionId = positionSelect.value;
     const position = positionData[selectedPositionId];
-    
     if (!position) return;
-    var x=0;
-    var inputTokenA = 0;
-    var inputTokenB = 0;
-    // Update form labels and placeholders
+
+    let inputTokenA = 0;
+    let inputTokenB = 0;
+
+    // Find the two input groups under #increase
     const formGroups = document.querySelectorAll('#increase .form-row .form-group');
+
     formGroups.forEach(group => {
         const label = group.querySelector('label');
-        const input = group.querySelector('input'); // Get the input element
+        const input = group.querySelector('input');
+
+        if (!label || !input) return;
 
         if (label) {
             if (label.textContent.startsWith('Add ')) {
                 const isFirstToken = label === formGroups[0].querySelector('label');
                 const tokenSymbol = isFirstToken ? position.tokenA : position.tokenB;
-                label.textContent = `Add ${tokenSymbol}`;
+                label.textContent = `Add Total ${tokenSymbol}`;
             }
         }
-        // Get the input value
-        if (input) {
-            const inputValue = input.value;
-            console.log("input value is: ",inputValue);
-            console.log(`${label?.textContent}: ${inputValue}`);
-          if(x==0){
-                inputTokenA = parseFloat(inputValue) || 0; // Convert to number
-            } else {
-                inputTokenB = parseFloat(inputValue) || 0; // Convert to number
-            }
-            // Or do something with the value
-            // someFunction(inputValue);
+        const labelText = label.textContent.trim().toUpperCase(); // Make case-insensitive
+
+        if (labelText.includes(position.tokenA.toUpperCase())) {
+            inputTokenA = parseFloat(input.value) || 0;
+        } else if (labelText.includes(position.tokenB.toUpperCase())) {
+            inputTokenB = parseFloat(input.value) || 0;
         }
-        x = x+1;
+
+        console.log(`${labelText}: ${input.value}`);
     });
+
     
     // Update new total liquidity field
     const totalLiquidityInput = document.querySelector('#increase input[readonly]');
@@ -1694,7 +1767,7 @@ function updateStakePositionInfo() {
     if (!position) return;
     
     // Update current position info card
-    const infoCard = document.querySelector('#stake-increase .info-card:nth-child(3)');
+    const infoCard = document.querySelector('#stake-increase .info-card:nth-child(4)');
     infoCard.innerHTML = `
         <h3>Current Selected Position</h3>
         <p><strong>Pool:</strong> ${position.pool} (${position.feeTier})</p>
@@ -1991,6 +2064,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         positionSelect.addEventListener('change', updatePositionInfo);
+        positionSelect.addEventListener('change', updateTotalLiqIncrease);
         updatePositionInfo();
     }
     // Add event listeners to both inputs in the form-row
@@ -2143,8 +2217,41 @@ const positionSelectMainPageWithdrawNFT = document.querySelector('#staking-main-
 
     populateStakingManagementData();
 
+    displayWalletBalances();
   loadSettings();
 });
+
+
+
+
+
+// Function to display wallet balances
+function displayWalletBalances() {
+    const balancesContainer = document.getElementById('walletBalancesDisplay');
+    const balancesContainer2 = document.getElementById('walletBalancesDisplay2');
+    const balancesContainer3 = document.getElementById('walletBalancesDisplay3');
+    const balancesContainer4 = document.getElementById('walletBalancesDisplay4');
+    
+    if (!balancesContainer) return;
+    
+    // Create HTML for each balance
+    let balancesHTML = '';
+    for (const [token, balance] of Object.entries(walletBalances)) {
+        balancesHTML += `
+            <div class="balance-item">
+                <span class="token-name">${token}</span>
+                <span class="token-amount">${balance.toLocaleString()}</span>
+            </div>
+        `;
+    }
+    
+    // Update the container
+    balancesContainer.innerHTML = balancesHTML;
+    balancesContainer2.innerHTML = balancesHTML;
+    balancesContainer3.innerHTML = balancesHTML;
+    balancesContainer4.innerHTML = balancesHTML;
+}
+
 
 
 
@@ -2422,12 +2529,6 @@ const walletBalances = {
     'DAI': 890.25,
     'WBTC': 0.15
 };
-
-function setMaxAmount(inputElement, tokenSymbol) {
-    const balance = walletBalances[tokenSymbol] || 0;
-    inputElement.value = balance.toString();
-}
-
 function addMaxButtonToField(inputElement, tokenSymbol) {
     // Create MAX button
     const maxButton = document.createElement('button');
@@ -2460,11 +2561,143 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
         maxButton.style.background = '#007bff';
     });
     
-    // Add click handler
-    maxButton.addEventListener('click', () => {
-        setMaxAmount(inputElement, tokenSymbol);
+    // Add click handler with proper context
+    maxButton.addEventListener('click', function() {
+        const positionSelect = document.querySelector('#stake-increase select');
+        const selectedPositionId = positionSelect.value;
+        const position = stakingPositionData[selectedPositionId];
+        
+        if (!position) return;
+        
+        // Determine which token we're working with
+        const label = inputElement.closest('.form-group').querySelector('label');
+        let currentTokenSymbol = tokenSymbol;
+        let maxAmount = 0;
+        
+        if (label && label.textContent.includes(position.tokenA)) {
+            currentTokenSymbol = position.tokenA;
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        } else if (label && label.textContent.includes(position.tokenB)) {
+            currentTokenSymbol = position.tokenB;
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        } else {
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        }
+        
+        setMaxAmount(inputElement, currentTokenSymbol, maxAmount);
     });
     
+
+    // Add click handler with proper context
+    maxButton.addEventListener('click', function() {
+        const positionSelect = document.querySelector('#increase select');
+        const selectedPositionId = positionSelect.value;
+        const position = positionData[selectedPositionId];
+        
+        if (!position) return;
+        
+        // Determine which token we're working with
+        const label = inputElement.closest('.form-group').querySelector('label');
+        let currentTokenSymbol = tokenSymbol;
+        let maxAmount = 0;
+        
+        if (label && label.textContent.includes(position.tokenA)) {
+            currentTokenSymbol = position.tokenA;
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        } else if (label && label.textContent.includes(position.tokenB)) {
+            currentTokenSymbol = position.tokenB;
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        } else {
+            maxAmount = getMaxAmountForToken(position, currentTokenSymbol);
+        }
+        
+        setMaxAmount(inputElement, currentTokenSymbol, maxAmount);
+    });
+
+    // Add click handler with proper context
+    maxButton.addEventListener('click', function() {
+        // Get the currently selected token from the dropdown
+        const fromTokenSelect = document.getElementById('fromToken');
+        const tokenSelected = fromTokenSelect.value; // This will be 'ETH', 'USDC', etc.
+        
+        // Get the wallet balance for the selected token
+        const maxAmount = getMaxAmountForTokenList(tokenSelected);
+        
+        // Set the max amount in the input field
+        setMaxAmount2(inputElement, tokenSelected, maxAmount);
+    });
+
+
+
+    // Add click handler for MAX button
+    maxButton.addEventListener('click', function() {
+    // Get the Token A select element specifically inside the #create page
+    const tokenSelect = document.querySelector('#create .form-row .form-group:nth-child(1) select');
+        const label = inputElement.closest('.form-group').querySelector('label');
+   
+        console.log("LABEL LABEL: ",label);
+                // Extract the text from the label element
+            const labelText = label.textContent;
+
+            // Now split the string
+            const token = labelText.split(' ').pop();
+
+    // Now tokenSelect is the correct <select> element for Token A or Token B
+    console.log('Selected token:', tokenSelect.value);
+
+        const selectedToken = tokenSelect.value.split(' - ')[0]; // Gets "ETH" from "ETH - Ethereum"
+        const walletBalance = walletBalances[selectedToken] || 0;
+        
+        // Format based on token type
+        const formattedValue = ['ETH', 'WBTC'].includes(selectedToken) 
+            ? parseFloat(walletBalance).toFixed(6)
+            : parseFloat(walletBalance).toFixed(2);
+        
+        const maxAmount = getMaxAmountForTokenList(selectedToken);
+
+        if (label && label.textContent.trim() === 'Amount A') {
+            console.log("Amount A Activated!");
+        // Set the max amount in the input field
+        setMaxAmount2(inputElement, selectedToken, maxAmount);
+        }
+        if(token){  console.log("Amount A Activated!");
+
+        const maxAmount = getMaxAmountForTokenList(token);
+        // Set the max amount in the input field
+        setMaxAmount2(inputElement, token, maxAmount);
+
+        }
+    });
+
+
+
+ maxButton.addEventListener('click', function() {
+    // Get the Token A select element specifically inside the #create page
+    const tokenSelect = document.querySelector('#create .form-row .form-group:nth-child(2) select');
+
+const label = inputElement.closest('.form-group').querySelector('label');
+    // Now tokenSelect is the correct <select> element for Token A or Token B
+    console.log('Selected token:', tokenSelect.value);
+
+        const selectedToken = tokenSelect.value.split(' - ')[0]; // Gets "ETH" from "ETH - Ethereum"
+        const walletBalance = walletBalances[selectedToken] || 0;
+        
+        // Format based on token type
+        const formattedValue = ['ETH', 'WBTC'].includes(selectedToken) 
+            ? parseFloat(walletBalance).toFixed(6)
+            : parseFloat(walletBalance).toFixed(2);
+        
+        const maxAmount = getMaxAmountForTokenList(selectedToken);
+
+        if (label && label.textContent.trim() === 'Amount B') {
+            console.log("Amount A Activated!");
+        // Set the max amount in the input field
+        setMaxAmount2(inputElement, selectedToken, maxAmount);
+        }
+        // Set the max amount in the input field
+    });
+
+
     // Make input element relative positioned
     inputElement.style.position = 'relative';
     
@@ -2485,6 +2718,66 @@ function addMaxButtonToField(inputElement, tokenSymbol) {
     
     // Append button to wrapper (not the form-group container)
     wrapper.appendChild(maxButton);
+}
+
+
+// Helper function to get max amount for different token types
+// Simplified function to get max amount based on selected token
+function getMaxAmountForTokenList(tokenSymbol) {
+    // Return the wallet balance for the selected token
+    return walletBalances[tokenSymbol] || 0;
+}
+
+
+
+// Modified setMaxAmount function
+function setMaxAmount2(inputElement, tokenSymbol, amount) {
+    if (!inputElement) return;
+    
+    // Format amount based on token type
+    let formattedAmount;
+    if (['WBTC', 'ETH'].includes(tokenSymbol)) {
+        formattedAmount = parseFloat(amount).toFixed(6); // More decimals for crypto
+    } else {
+        formattedAmount = parseFloat(amount).toFixed(2); // Standard tokens
+    }
+    
+    inputElement.value = formattedAmount;
+    inputElement.dispatchEvent(new Event('input')); // Trigger any calculations
+}
+
+
+
+// Helper function to get max amount for different token types
+function getMaxAmountForToken(position, tokenSymbol) {
+    // Check wallet balances first (from your earlier implementation)
+    const walletBalance = walletBalances[tokenSymbol] || 0;
+    
+    // Check if we need to consider other factors
+    if (position.tokenA === tokenSymbol) {
+        return Math.min(walletBalance, position.maxTokenA || Infinity);
+    } else if (position.tokenB === tokenSymbol) {
+        return Math.min(walletBalance, position.maxTokenB || Infinity);
+    }
+    
+    // Default case (for ETH or other tokens)
+    return walletBalance;
+}
+
+// Modified setMaxAmount function
+function setMaxAmount(inputElement, tokenSymbol, amount) {
+    if (!inputElement) return;
+    
+    // Format amount based on token type
+    let formattedAmount;
+    if (['WBTC', 'ETH'].includes(tokenSymbol)) {
+        formattedAmount = parseFloat(amount).toFixed(6);
+    } else {
+        formattedAmount = parseFloat(amount).toFixed(2);
+    }
+    
+    inputElement.value = formattedAmount;
+    inputElement.dispatchEvent(new Event('input'));
 }
 
 function initializeMaxButtons() {
@@ -2567,6 +2860,78 @@ function initializeMaxButtons() {
             });
         }
     });
+
+
+
+    
+    // INCREASE LIQUIDITY PAGE - The two token amount fields
+    const increaseInputsStaking = document.querySelectorAll('#stake-increase .form-row input[type="number"]');
+    increaseInputsStaking.forEach((input, index) => {
+        const getIncreaseToken = (inputIndex) => {
+            const labels = document.querySelectorAll('#stake-increase .form-row label');
+            if (labels[inputIndex]) {
+                const labelText = labels[inputIndex].textContent;
+                return labelText.replace('Add ', '');
+            }
+            return inputIndex === 0 ? 'ETH' : 'USDC';
+        };
+        
+        addMaxButtonToField(input, getIncreaseToken(index));
+        
+        // Update when position changes (since tokens change based on selected position)
+        const positionSelect = document.querySelector('#stake-increase select');
+        if (positionSelect) {
+            positionSelect.addEventListener('change', () => {
+                // Small delay to let the labels update first
+                setTimeout(() => {
+                    // Remove old button
+                    const oldButton = input.parentElement.querySelector('.max-button');
+                    if (oldButton) oldButton.remove();
+                    
+                    // Add new button with updated token
+                    addMaxButtonToField(input, getIncreaseToken(index));
+                }, 100);
+            });
+        }
+    });
+
+
+
+
+
+
+
+    // INCREASE LIQUIDITY PAGE - The two token amount fields
+    const createPositionField = document.querySelectorAll('#create .form-row input[type="number"]');
+    createPositionField.forEach((input, index) => {
+        const getIncreaseToken = (inputIndex) => {
+            const labels = document.querySelectorAll('#create .form-row label');
+            if (labels[inputIndex]) {
+                const labelText = labels[inputIndex].textContent;
+                return labelText.replace('Add ', '');
+            }
+            return inputIndex === 0 ? 'ETH' : 'USDC';
+        };
+        
+        addMaxButtonToField(input, getIncreaseToken(index));
+        
+        // Update when position changes (since tokens change based on selected position)
+        const positionSelect = document.querySelector('#create select');
+        if (positionSelect) {
+            positionSelect.addEventListener('change', () => {
+                // Small delay to let the labels update first
+                setTimeout(() => {
+                    // Remove old button
+                    const oldButton = input.parentElement.querySelector('.max-button');
+                    if (oldButton) oldButton.remove();
+                    
+                    // Add new button with updated token
+                    addMaxButtonToField(input, getIncreaseToken(index));
+                }, 100);
+            });
+        }
+    });
+    
 }
 
 // Initialize when DOM is loaded
@@ -2587,7 +2952,30 @@ if (document.readyState === 'loading') {
 
 
 
+// Function to update token icon and clear amount field
+function updateTokenIcon(selectId, iconId) {
+    // Get the selected token
+    const select = document.getElementById(selectId);
+    const token = select.value;
+    
+    // Update the icon (your existing code)
+    const icon = document.getElementById(iconId);
+    icon.textContent = token.charAt(0); // First letter of token
+    
+    // Clear the amount input field in the same form group
+    const formGroup = select.closest('.form-group').nextElementSibling;
+    if (formGroup && formGroup.classList.contains('form-group')) {
+        const amountInput = formGroup.querySelector('input[type="number"]');
+        if (amountInput) {
+            amountInput.value = '0.0';
+        }
+    }
+}
 
+// Add event listener to token selector
+document.getElementById('fromToken').addEventListener('change', function() {
+    updateTokenIcon('fromToken', 'fromTokenIcon');
+});
 
 
         
