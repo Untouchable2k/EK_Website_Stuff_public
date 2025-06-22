@@ -1,0 +1,69 @@
+// Target the create section
+const createSection = document.getElementById('create');
+if (createSection) {
+    // Get both number inputs in the create section
+    const numberInputs = createSection.querySelectorAll('input[type="number"]');
+    const amountAInput = numberInputs[0]; // First input (Amount A)
+    const amountBInput = numberInputs[1]; // Second input (Amount B)
+    
+    let isUpdating = false;
+    let debounceTimerA;
+    let debounceTimerB;
+    
+    if (amountAInput) {
+        amountAInput.addEventListener('input', function() {
+            if (isUpdating) return; // Prevent circular updates
+            
+            console.log('Create section - Amount A typing:', this.value);
+            
+            // Clear previous timer
+            clearTimeout(debounceTimerA);
+            
+            // Set new timer - only call function after user stops typing for 300ms
+            debounceTimerA = setTimeout(() => {
+                console.log('Create section - Amount A final value:', this.value);
+                isUpdating = true;
+                
+                if (typeof getRatioCreatePositiontokenA === 'function') {
+                    getRatioCreatePositiontokenA();
+                } else {
+                    console.log('getRatioCreatePositiontokenA function called from create section');
+                }
+                
+                // Reset the updating flag after processing
+                setTimeout(() => {
+                    isUpdating = false;
+                }, 50);
+            }, 300); // Wait 300ms after user stops typing
+        });
+    }
+    
+    // Similar for the other input
+    if (amountBInput) {
+        amountBInput.addEventListener('input', function() {
+            if (isUpdating) return; // Prevent circular updates
+            
+            console.log('Create section - Amount B typing:', this.value);
+            
+            // Clear previous timer
+            clearTimeout(debounceTimerB);
+            
+            // Set new timer - only call function after user stops typing for 300ms
+            debounceTimerB = setTimeout(() => {
+                console.log('Create section - Amount B final value:', this.value);
+                isUpdating = true;
+                
+                if (typeof getRatioCreatePositiontokenB === 'function') {
+                    getRatioCreatePositiontokenB();
+                } else {
+                    console.log('getRatioCreatePositiontokenB function called from create section');
+                }
+                
+                // Reset the updating flag after processing
+                setTimeout(() => {
+                    isUpdating = false;
+                }, 50);
+            }, 300); // Wait 300ms after user stops typing
+        });
+    }
+}
