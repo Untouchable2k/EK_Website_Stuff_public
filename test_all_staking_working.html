@@ -735,705 +735,814 @@
             margin-top: 12px;
             display: none;
         }
+
+
+               /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255,255,255,0.3);
+            border-top: 6px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 0.5s;
+        }
+
+        .loading-subtitle {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 1s;
+        }
+
+        .loading-status {
+            font-size: 1em;
+            opacity: 0.7;
+            opacity: 0;
+            animation: fadeIn 0.8s ease forwards 1.5s;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>DeFi Operations</h1>
-            <p>Swap, Stake, and Manage Your Liquidity Positions</p>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="loader"></div>
+            <div class="loading-title">DeFi Operations</div>
+            <div class="loading-subtitle">Initializing your DeFi experience</div>
+            <div class="loading-status" id="loading-status">Loading contracts...</div>
         </div>
+    </div>
 
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('swap')">Swap</button>
-            <button class="nav-tab" onclick="switchTab('create')">Create Position</button>
-            <button class="nav-tab" onclick="switchTab('increase')">Increase Liquidity</button>
-            <button class="nav-tab" onclick="switchTab('decrease')">Decrease Liquidity</button>
-            <button class="nav-tab" onclick="switchTab('staking-main-page')">Staking</button>
-            <button class="nav-tab" onclick="switchTab('stakeincrease')">Stake Increase</button>
-            <button class="nav-tab" onclick="switchTab('stake-decrease')">Stake Decrease</button>
-            <button class="nav-tab" onclick="switchTab('settings')">Settings</button>
-            <button class="nav-tab" onclick="switchTab('staking-management')">Stake Management</button>
-            <button class="nav-tab" onclick="switchTab('testnet-faucet')">Testnet Token Facuet</button>
-        </div>
-        <center>
-        <div class="wallet-section">
-        <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
-        <div id="walletInfo" style="display: none;">
-            <span id="walletAddress"></span>
-            <button onclick="disconnectWallet()">Disconnect</button>
-        </div>
-        </center>
-        <div class="content">
-             <!-- Settings Page -->
-    <div id="testnet-faucet" class="page">
-        <div class="info-card">
-            <h3>Testnet Facuet</h3>
-            <p>Collect 10 0xBTC and 10 B0x for testing!</p>
-        </div>
-
-                <button class="btn-primary" onclick="getFacuetTokens()">Get 10 0xBTC + 10 B0x for Testnet Two Transactions</button>
-
-
+    <!-- Main Content (hidden initially) -->
+    <div id="main-content">
+        <div class="container">
+            <div class="header">
+                <h1>DeFi Operations</h1>
+                <p>Swap, Stake, and Manage Your Liquidity Positions</p>
             </div>
 
-             <!-- Settings Page -->
-    <div id="settings" class="page">
-        <div class="info-card">
-            <h3>System Settings</h3>
-            <p>Configure minimum staking amounts and user holding requirements for the platform. To prevent Spam Attacks!</p>
-        </div>
-
-        <div class="settings-grid">
-
-            <div class="settings-form address-config">
-                <h3>🏦 Staking Rewards Contract Address Configuration</h3>
-                <p>Configure the Reward contract addresses used by the platform. Enter reward addresses in JSON array format.</p>
-                
-                <div class="form-group">
-                    <label>Reward Contract Addresses (JSON Array)</label>
-                    <textarea id="contractAddresses" placeholder='["0x4200000000000000000000000000000000000006", "0x0000000000000000000000000000000000000000"]'>["0x4200000000000000000000000000000000000006", "0x0000000000000000000000000000000000000000"]</textarea>
-                </div>
-                
-                <div class="button-group">
-                    <button class="btn-secondary" onclick="restoreDefaultAddressesfromContract()">Get Defaults from Contract</button>
-                    <button class="btn-secondary" onclick="restoreDefaultAddressesfromGithub()">Get Defaults from Github</button>
-                    <button class="btn-secondary" onclick="restoreDefaultAddresses()">Restore Defaults </button>
-                    <button class="btn-primary" onclick="saveAddresses()">Save Addresses</button>
-                </div>
-                <div id="addressSuccess" class="success-message">Contract addresses saved successfully!</div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab('swap')">Swap</button>
+                <button class="nav-tab" onclick="switchTab('create')">Create Position</button>
+                <button class="nav-tab" onclick="switchTab('increase')">Increase Liquidity</button>
+                <button class="nav-tab" onclick="switchTab('decrease')">Decrease Liquidity</button>
+                <button class="nav-tab" onclick="switchTab('staking-main-page')">Staking</button>
+                <button class="nav-tab" onclick="switchTab('stakeincrease')">Stake Increase</button>
+                <button class="nav-tab" onclick="switchTab('stake-decrease')">Stake Decrease</button>
+                <button class="nav-tab" onclick="switchTab('settings')">Settings</button>
+                <button class="nav-tab" onclick="switchTab('staking-management')">Stake Management</button>
+                <button class="nav-tab" onclick="switchTab('testnet-faucet')">Testnet Token Facuet</button>
             </div>
-            <div class="settings-form">
-                <h3>🔒 Minimum Staking Configuration</h3>
-                <p>Set the minimum amount of tokenA required for users Staked Position.  Used to prevent spam.  Units is Wei</p>
-                
-                <div class="form-group">
-                    <label>Minimum Staking Amount</label>
-                    <div class="input-group">
-                        <input type="number" id="minStaking" placeholder="0" step="1" min="0">
-                        <div class="unit">Tokens</div>
+            <center>
+            <div class="wallet-section">
+            <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+            <div id="walletInfo" style="display: none;">
+                <span id="walletAddress"></span>
+                <button onclick="disconnectWallet()">Disconnect</button>
+            </div>
+            </center>
+            <div class="content">
+                <!-- Settings Page -->
+        <div id="testnet-faucet" class="page">
+            <div class="info-card">
+                <h3>Testnet Facuet</h3>
+                <p>Collect 10 0xBTC and 10 B0x for testing!</p>
+            </div>
+
+                    <button class="btn-primary" onclick="getFacuetTokens()">Get 10 0xBTC + 10 B0x for Testnet Two Transactions</button>
+
+
+                </div>
+
+                <!-- Settings Page -->
+        <div id="settings" class="page">
+            <div class="info-card">
+                <h3>System Settings</h3>
+                <p>Configure minimum staking amounts and user holding requirements for the platform. To prevent Spam Attacks!</p>
+            </div>
+
+            <div class="settings-grid">
+
+                <div class="settings-form address-config">
+                    <h3>🏦 Staking Rewards Contract Address Configuration</h3>
+                    <p>Configure the Reward contract addresses used by the platform. Enter reward addresses in JSON array format.</p>
+                    
+                    <div class="form-group">
+                        <label>Reward Contract Addresses (JSON Array)</label>
+                        <textarea id="contractAddresses" placeholder='["0x4200000000000000000000000000000000000006", "0x0000000000000000000000000000000000000000"]'>["0x4200000000000000000000000000000000000006", "0x0000000000000000000000000000000000000000"]</textarea>
                     </div>
-                </div>
-                
-                <button class="btn-primary" onclick="saveMinStaking()">Save Minimum Staking</button>
-                <div id="stakingSuccess" class="success-message">Minimum staking amount saved successfully!</div>
-            </div>
-
-            <div class="settings-form">
-                <h3>💰 Minimum User Holdings</h3>
-                <p>Set the minimum tokenA required for user to see a NFT position held in wallet. To prevent spam attacks! Units is Wei</p>
-                
-                <div class="form-group">
-                    <label>Minimum Holdings Required</label>
-                    <div class="input-group">
-                        <input type="number" id="minUserHoldings" placeholder="0" step="1" min="0">
-                        <div class="unit">Tokens</div>
+                    
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="restoreDefaultAddressesfromContract()">Get Defaults from Contract</button>
+                        <button class="btn-secondary" onclick="restoreDefaultAddressesfromGithub()">Get Defaults from Github</button>
+                        <button class="btn-secondary" onclick="restoreDefaultAddresses()">Restore Defaults </button>
+                        <button class="btn-primary" onclick="saveAddresses()">Save Addresses</button>
                     </div>
+                    <div id="addressSuccess" class="success-message">Contract addresses saved successfully!</div>
                 </div>
-                
-                <button class="btn-primary" onclick="saveMinUserHoldings()">Save Minimum Holdings</button>
-                <div id="holdingsSuccess" class="success-message">Minimum holdings amount saved successfully!</div>
-            </div>
-
-        </div>
-            </div>
-
-            <!-- Staking Management Page -->
-            <div id="staking-management" class="page">
-                <div class="info-card">
-                    <h3>Staking Management</h3>
-                    <p>Manage reward tokens and configure staking reward periods for the platform.</p>
-                </div>
-
-                <div class="staking-management">
-                    <div class="management-card">
-                        <h3>🪙 Add Reward Token</h3>
-                        <p>Add new ERC20 tokens to be distributed as staking rewards. Costs 10 USDC, get Testnet USDC for Base Sepolia @ <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">https://faucet.circle.com/</a></p>
-                        
-                        <div class="form-group">
-                            <label>Reward Token Contract Address</label>
-                            <input type="text" id="rewardTokenAddress" class="address-input" 
-                                   placeholder="0x742d35Cc6634C0532925a3b8D1C07E8DEa95C7C4" 
-                                   pattern="^0x[a-fA-F0-9]{40}$">
+                <div class="settings-form">
+                    <h3>🔒 Minimum Staking Configuration</h3>
+                    <p>Set the minimum amount of tokenA required for users Staked Position.  Used to prevent spam.  Units is Wei</p>
+                    
+                    <div class="form-group">
+                        <label>Minimum Staking Amount</label>
+                        <div class="input-group">
+                            <input type="number" id="minStaking" placeholder="0" step="1" min="0">
+                            <div class="unit">Tokens</div>
                         </div>
-                        <button class="btn-success" onclick="addRewardToken()">Add Reward Token</button>
-                        <br></br><br></br>
-                        <div class="reward-tokens-list" id="rewardTokensList">
-                            <h4>Current Reward Tokens Ready to Start new Period of Staking:</h4>
-                            <div id="rewardTokensContainer">
-                                <p style="color: #6c757d; font-style: italic;">No reward tokens added yet.</p>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="saveMinStaking()">Save Minimum Staking</button>
+                    <div id="stakingSuccess" class="success-message">Minimum staking amount saved successfully!</div>
+                </div>
+
+                <div class="settings-form">
+                    <h3>💰 Minimum User Holdings</h3>
+                    <p>Set the minimum tokenA required for user to see a NFT position held in wallet. To prevent spam attacks! Units is Wei</p>
+                    
+                    <div class="form-group">
+                        <label>Minimum Holdings Required</label>
+                        <div class="input-group">
+                            <input type="number" id="minUserHoldings" placeholder="0" step="1" min="0">
+                            <div class="unit">Tokens</div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary" onclick="saveMinUserHoldings()">Save Minimum Holdings</button>
+                    <div id="holdingsSuccess" class="success-message">Minimum holdings amount saved successfully!</div>
+                </div>
+
+            </div>
+                </div>
+
+                <!-- Staking Management Page -->
+                <div id="staking-management" class="page">
+                    <div class="info-card">
+                        <h3>Staking Management</h3>
+                        <p>Manage reward tokens and configure staking reward periods for the platform.</p>
+                    </div>
+
+                    <div class="staking-management">
+                        <div class="management-card">
+                            <h3>🪙 Add Reward Token</h3>
+                            <p>Add new ERC20 tokens to be distributed as staking rewards. Costs 10 USDC, get Testnet USDC for Base Sepolia @ <a href="https://faucet.circle.com/" target="_blank" rel="noopener noreferrer">https://faucet.circle.com/</a></p>
+                            
+                            <div class="form-group">
+                                <label>Reward Token Contract Address</label>
+                                <input type="text" id="rewardTokenAddress" class="address-input" 
+                                    placeholder="0x742d35Cc6634C0532925a3b8D1C07E8DEa95C7C4" 
+                                    pattern="^0x[a-fA-F0-9]{40}$">
+                            </div>
+                            <button class="btn-success" onclick="addRewardToken()">Add Reward Token</button>
+                            <br></br><br></br>
+                            <div class="reward-tokens-list" id="rewardTokensList">
+                                <h4>Current Reward Tokens Ready to Start new Period of Staking:</h4>
+                                <div id="rewardTokensContainer">
+                                    <p style="color: #6c757d; font-style: italic;">No reward tokens added yet.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="management-card">
+                            <h3>🚀 Start Reward Period</h3>
+                            <p>Configure and start a new reward distribution period for stakers.</p>
+                            
+                            <div class="form-group">
+                                <label>Select Reward Token</label>
+                                <select id="selectedRewardToken">
+                                    <option value="">Select a reward token...</option>
+                                </select>
+                            </div>
+                            <button class="btn-primary" onclick="startRewardPeriod()">Start Reward Period</button>
+                        </div><br></br>
+
+                        <div class="management-card">
+                            <h3>📊 Active Reward Periods</h3>
+                            <p>Monitor and manage currently active reward distribution periods.</p>
+                            
+                            <div id="activePeriodsContainer">
+                                <p style="color: #6c757d; font-style: italic;">No active reward periods.</p>
+                            </div>
+                        </div>
+                    </div>
+                            <button class="btn-primary" onclick="getRewardStats()">getRewardStats</button>
+                </div>
+
+
+                <!-- Swap Page -->
+                <div id="swap" class="page active">
+
+
+                    <!-- Wallet Balances Display -->
+                    <div class="wallet-balances">
+                        <h3>Wallet Balances</h3>
+                        <div id="walletBalancesDisplay3" class="balances-grid">
+                            <!-- Will be populated by JavaScript -->
+                            <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Token Swap</h3>
+                        <p>Exchange one token for another at current market rates with minimal slippage.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>From Token</label>
+                        <div class="token-selector">
+                            <div class="token-icon" id="fromTokenIcon">E</div>
+                            <select id="fromToken" onchange="updateTokenIcon('fromToken', 'fromTokenIcon')">
+                                <option value="B0x">B0x - B Zero X Token</option>
+                                <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" placeholder="0.0" step="0.000001" value="0">
+                    </div>
+
+                    <div class="swap-direction">
+                        <button class="swap-arrow" onclick="swapTokens()">⇅</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>To Token</label>
+                        <div class="token-selector">
+                            <div class="token-icon" id="toTokenIcon">U</div>
+                            <select id="toToken" onchange="updateTokenIcon('toToken', 'toTokenIcon')">
+                                <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
+                                <option value="B0x">B0x - B Zero X Token</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estimated Output</label>
+                        <input type="text" value="0.0" readonly style="background: #f8f9fa;">
+                    </div>
+
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceSwap"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
+                            </select>
+                        </div>
+
+                    <button class="btn-primary" onclick="executeSwap()">Execute Swap</button>
+                </div>
+
+                <!-- Staking Page -->
+                <div id="staking-main-page" class="page">
+                    <div class="info-card3">
+                        <h2>Uniswap V4 Token Staking</h2>
+                        <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
+                        </div>
+                    <div class="rewards-card">
+                        <h3>Current Rewards</h3>
+                        <div class="rewards-amount" id="rewardsAmount">0.01 ETH & 10 TokenA</div>
+                        <div class="rewards-usd" id="rewardsUSD">≈ $1.90 USD</div>
+
+                        <button class="btn-primary" onclick="collectRewards()">Collect Rewards</button>
+                    </div>
+                    <div class="staking-stats" id="stakingStatsContainer">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                    <div class="info-card3">
+                        <h2>Uniswap V4 Token Staking</h2>
+                        <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
+                        </div>
+
+                    <div class="info-card2">
+                        <h3>NFT Position Info</h3>
+                        <p>Select NFT to get info</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Position</label>
+                            <select>
+                                <option>STAKE - Staking Token</option>
+                                <option>DAI - Dai Stablecoin</option>
+                            </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estimated Percentage of Staking Rewards this position is</label>
+                        <input type="text" id="estimatedRewards" value="9.06 STAKE" readonly style="background: #f8f9fa;">
+                    </div>
+
+                        <button class="btn-success" onclick="depositNFTStake()">Deposit NFT</button><br></br><br></br>
+
+                    <div class="info-card3">
+                        <h2>Uniswap v4 NFT Token Withdrawing</h2>
+                        <p>Unstake your Unsiwap NFT tokens below. It is cheaper if you use Stake Decrease if you are only removing a portion of your funds from staking.</p>
+                    </div>
+
+                        <div class="info-card">
+                        <h3>Token Withdrawing</h3>
+                        <p>Unstake your Unsiwap NFT tokens below.</p>
+                    </div>
+                <br></br>
+                    <div class="form-group2">
+                        <label>Select NFT to Withdraw</label>
+                            <select>
+                                <option>UNSTAKE - UNStaking Token</option>
+                                <option>UNDAI - UNDai Stablecoin</option>
+                            </select>
+                    </div>
+                        <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
+
+                    <button onclick="calculateNewRewards()">Calculate New Rewards</button>
+
+                </div>
+
+                <!-- Create Position Page -->
+                <div id="create" class="page">
+                    <div class="info-card">
+                        <h3>Create Liquidity Position</h3>
+                        <p>Provide liquidity to earn fees by depositing token pairs into liquidity pools.</p>
+                    </div>
+
+                    <!-- Wallet Balances Display -->
+                    <div class="wallet-balances">
+                        <h3>Wallet Balances</h3>
+                        <div id="walletBalancesDisplay4" class="balances-grid">
+                            <!-- Will be populated by JavaScript -->
+                            <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Token A</label>
+                            <div class="token-selector">
+
+                        <div class="token-icon" id="tokenAIcon">U</div>
+                                <select id="tokenA">
+                                    <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
+                                    <option value="B0x">B0x - B Zero X Token</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Token B</label>
+                            <div class="token-selector">
+                            <div class="token-icon" id="tokenBIcon">U</div>
+                                <select id="tokenB">
+                                    <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
+                                    <option value="B0x">B0x - B Zero X Token</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    <div class="management-card">
-                        <h3>🚀 Start Reward Period</h3>
-                        <p>Configure and start a new reward distribution period for stakers.</p>
-                        
+                    <div class="form-row">
                         <div class="form-group">
-                            <label>Select Reward Token</label>
-                            <select id="selectedRewardToken">
-                                <option value="">Select a reward token...</option>
+                            <label>Amount A</label>
+                            <input type="number" id="amountA" placeholder="0.0" step="0.000001" value="0">          </div>
+                        <div class="form-group">
+                            <label>Amount B</label>
+                            <input type="number" id="amountB" placeholder="0.0" step="0.000001" value="0">        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fee Tier</label>
+                            <select>
+                                <option>Dynamic Fee - Required For Staking</option>
+                            <!-- <option>0.30% - Standard</option>
+                                <option>1.00% - Exotic pairs</option>-->
                             </select>
                         </div>
-                        <button class="btn-primary" onclick="startRewardPeriod()">Start Reward Period</button>
-                    </div><br></br>
-
-                    <div class="management-card">
-                        <h3>📊 Active Reward Periods</h3>
-                        <p>Monitor and manage currently active reward distribution periods.</p>
-                        
-                        <div id="activePeriodsContainer">
-                            <p style="color: #6c757d; font-style: italic;">No active reward periods.</p>
+                        <div class="form-group">
+                            <label>Price Range</label>
+                            <select>
+                                <option>Full Range - Required For Staking</option>
+                                <!---
+                                <option>Narrow (±10%)</option>
+                                <option>Wide (±50%)</option>
+                                <option>Custom</option>
+                                -->
+                            </select>
                         </div>
-                    </div>
-                </div>
-                        <button class="btn-primary" onclick="getRewardStats()">getRewardStats</button>
-            </div>
+
+                        <div class="form-group">
+                            <label>Hook Address</label>
+                            <select>
+                                <option>Use Dynamic Fee Hook - Required For Staking</option>
+                                <!---
+                                <option>Narrow (±10%)</option>
+                                <option>Wide (±50%)</option>
+                                <option>Custom</option>
+                                -->
+                            </select>
+                        </div>
 
 
-            <!-- Swap Page -->
-            <div id="swap" class="page active">
-
-
-                <!-- Wallet Balances Display -->
-                <div class="wallet-balances">
-                    <h3>Wallet Balances</h3>
-                    <div id="walletBalancesDisplay3" class="balances-grid">
-                        <!-- Will be populated by JavaScript -->
-                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <h3>Token Swap</h3>
-                    <p>Exchange one token for another at current market rates with minimal slippage.</p>
-                </div>
-                
-                <div class="form-group">
-                    <label>From Token</label>
-                    <div class="token-selector">
-                        <div class="token-icon" id="fromTokenIcon">E</div>
-                        <select id="fromToken" onchange="updateTokenIcon('fromToken', 'fromTokenIcon')">
-                            <option value="B0x">B0x - B Zero X Token</option>
-                            <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
-                        </select>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label>Amount</label>
-                    <input type="number" placeholder="0.0" step="0.000001" value="0">
-                </div>
-
-                <div class="swap-direction">
-                    <button class="swap-arrow" onclick="swapTokens()">⇅</button>
-                </div>
-
-                <div class="form-group">
-                    <label>To Token</label>
-                    <div class="token-selector">
-                        <div class="token-icon" id="toTokenIcon">U</div>
-                        <select id="toToken" onchange="updateTokenIcon('toToken', 'toTokenIcon')">
-                            <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
-                            <option value="B0x">B0x - B Zero X Token</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Estimated Output</label>
-                    <input type="text" value="0.0" readonly style="background: #f8f9fa;">
-                </div>
-
-                    <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceSwap"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
-                    </div>
-
-                <button class="btn-primary" onclick="executeSwap()">Execute Swap</button>
-            </div>
-
-            <!-- Staking Page -->
-            <div id="staking-main-page" class="page">
-                <div class="info-card3">
-                    <h2>Uniswap V4 Token Staking</h2>
-                    <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
-                    </div>
-                <div class="rewards-card">
-                    <h3>Current Rewards</h3>
-                    <div class="rewards-amount" id="rewardsAmount">0.01 ETH & 10 TokenA</div>
-                    <div class="rewards-usd" id="rewardsUSD">≈ $1.90 USD</div>
-
-                    <button class="btn-primary" onclick="collectRewards()">Collect Rewards</button>
-                </div>
-                <div class="staking-stats" id="stakingStatsContainer">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-                <div class="info-card3">
-                    <h2>Uniswap V4 Token Staking</h2>
-                    <p>Stake your Unsiwap NFT tokens to earn rewards and support network security.</p>
-                    </div>
-
-                <div class="info-card2">
-                    <h3>NFT Position Info</h3>
-                    <p>Select NFT to get info</p>
-                </div>
-                <div class="form-group">
-                    <label>Select Position</label>
-                        <select>
-                            <option>STAKE - Staking Token</option>
-                            <option>DAI - Dai Stablecoin</option>
-                        </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Estimated Percentage of Staking Rewards this position is</label>
-                    <input type="text" id="estimatedRewards" value="9.06 STAKE" readonly style="background: #f8f9fa;">
-                </div>
-
-                    <button class="btn-success" onclick="depositNFTStake()">Deposit NFT</button><br></br><br></br>
-
-                <div class="info-card3">
-                    <h2>Uniswap v4 NFT Token Withdrawing</h2>
-                    <p>Unstake your Unsiwap NFT tokens below. It is cheaper if you use Stake Decrease if you are only removing a portion of your funds from staking.</p>
-                </div>
-
-                       <div class="info-card">
-                    <h3>Token Withdrawing</h3>
-                    <p>Unstake your Unsiwap NFT tokens below.</p>
-                </div>
-              <br></br>
-                <div class="form-group2">
-                    <label>Select NFT to Withdraw</label>
-                        <select>
-                            <option>UNSTAKE - UNStaking Token</option>
-                            <option>UNDAI - UNDai Stablecoin</option>
-                        </select>
-                </div>
-                    <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
-
-                <button onclick="calculateNewRewards()">Calculate New Rewards</button>
-
-            </div>
-
-            <!-- Create Position Page -->
-            <div id="create" class="page">
-                <div class="info-card">
-                    <h3>Create Liquidity Position</h3>
-                    <p>Provide liquidity to earn fees by depositing token pairs into liquidity pools.</p>
-                </div>
-
-                <!-- Wallet Balances Display -->
-                <div class="wallet-balances">
-                    <h3>Wallet Balances</h3>
-                    <div id="walletBalancesDisplay4" class="balances-grid">
-                        <!-- Will be populated by JavaScript -->
-                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Token A</label>
-                        <div class="token-selector">
-
-                    <div class="token-icon" id="tokenAIcon">U</div>
-                            <select id="tokenA">
-                                <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
-                                <option value="B0x">B0x - B Zero X Token</option>
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceCreate"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
                             </select>
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label>Token B</label>
-                        <div class="token-selector">
-                        <div class="token-icon" id="tokenBIcon">U</div>
-                            <select id="tokenB">
-                                <option value="0xBTC">0xBTC - 0xBitcoin Token</option>
-                                <option value="B0x">B0x - B Zero X Token</option>
-                            </select>
+                        <label>Estimated Pool Share</label>
+                        <input type="text" value="0.00%" readonly style="background: #f8f9fa;">
+                    </div>
+
+                    <button class="btn-primary" onclick="getCreatePosition()">Create Position</button>
+                    <button class="btn-primary" onclick="getRatioCreatePositiontokenA()">getRatioCreatePositiontokenA Position</button>
+                    <button class="btn-primary" onclick="getRatioCreatePositiontokenB()">getRatioCreatePositiontokenB Position</button>
+                    <button class="btn-primary" onclick="getMaxCreatePosition()">getMaxCreatePosition Button</button>
+                    
+                </div>
+
+
+                <!-- Increase Liquidity Page -->
+                <div id="increase" class="page">
+                    <div class="info-card">
+                        <h3>Increase Liquidity</h3>
+                        <p>Add more funds to your existing liquidity position to earn more fees.</p>
+                    </div>
+                    <!-- Wallet Balances Display -->
+                    <div class="wallet-balances">
+                        <h3>Wallet Balances</h3>
+                        <div id="walletBalancesDisplay" class="balances-grid">
+                            <!-- Will be populated by JavaScript -->
+                            <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Amount A</label>
-                        <input type="number" id="amountA" placeholder="0.0" step="0.000001" value="0">          </div>
-                    <div class="form-group">
-                        <label>Amount B</label>
-                        <input type="number" id="amountB" placeholder="0.0" step="0.000001" value="0">        </div>
-                </div>
 
-                <div class="form-row">
                     <div class="form-group">
-                        <label>Fee Tier</label>
+                        <label>Select Position</label>
                         <select>
-                            <option>Dynamic Fee - Required For Staking</option>
-                           <!-- <option>0.30% - Standard</option>
-                            <option>1.00% - Exotic pairs</option>-->
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
+
+                    <div class="info-card">
+                        <h3>Current Selected Position</h3>
+                        <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
+                        <p><strong>Current Liquidity:</strong> $1,250.00</p>
+                        <p><strong>Unclaimed Fees:</strong> $12.50</p>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Add Total <span id="tokenALabel">ETH</span></label>
+                            <input type="number" id="tokenAAmount" placeholder="0.0" step="0.000001" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Add Total <span id="tokenBLabel">USDC</span></label>
+                            <input type="number" id="tokenBAmount" placeholder="0.0" step="0.000001" value="0">
+                        </div>
+                    </div>
+                    
+                    <b>Adding Liquidity Automatically uses your unclaimed fees in the deposit</b><br></br>
+
                     <div class="form-group">
-                        <label>Price Range</label>
+                        <label>New Total Liquidity</label>
+                        <input type="text" value="$1,250.00" readonly style="background: #f8f9fa;">
+                    </div>
+
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceIncreaseLiquidity"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
+                            </select>
+                        </div>
+                    <button class="btn-primary" onclick="increaseLiquidity()">Increase Liquidity</button>
+                    <button class="btn-primary" onclick="getTokenIDsOwnedByMetamask()">Get Metamask StakedTokensOwned</button>
+                    <button class="btn-primary" onclick="getTokenIDsOwnedByStaking()">Get Staking Contracted Owned NFTs</button>
+                </div>
+
+
+                <!-- Decrease Liquidity Page -->
+                <div id="decrease" class="page">
+                    <div class="info-card">
+                        <h3>Decrease Liquidity</h3>
+                        <p>Remove funds from your liquidity position and claim accumulated fees.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Position</label>
+                        <select onchange="updatePositionInfo()">
+                        </select>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>Position Details</h3>
+                        <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
+                        <p><strong>Total Liquidity:</strong> $1,250.00</p>
+                        <p><strong>Unclaimed Fees:</strong> $12.50</p>
+                        <p><strong>Position Age:</strong> 15 days</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Removal Percentage</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="100" value="25" class="slider" onchange="updatePercentage(this.value)">
+                            <div class="percentage-display" id="percentageDisplay">25%</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><span id="tokenALabel">ETH</span> to Recieve</label>
+                            <input type="text" value="0.156 ETH" readonly style="background: #f8f9fa;" id="tokenAAmount">
+                        </div>
+                        <div class="form-group">
+                            <label><span id="tokenBLabel">USDC</span> to Recieve</label>
+                            <input type="text" value="312.50 USDC" readonly style="background: #f8f9fa;" id="tokenBAmount">
+                        </div>
+                    </div>
+
+    <b>Remving Liquidity Automatically claims your unclaimed fees.</b><br></br>
+
+                    <div class="form-group">
+                        <label>Fees to Claim</label>
+                        <input type="text" value="$12.50" readonly style="background: #f8f9fa;">
+                    </div>
+
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceDecrease"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
+                            </select>
+                        </div>
+                    <button class="btn-primary" onclick="decreaseLiquidity()">Remove Liquidity & Claim Fees</button>
+                </div>
+
+                <!-- Staking Increase Liquidity Page -->
+                <!-- Staking Increase Liquidity Page -->
+                <div id="stakeincrease" class="page">
+                    <div class="info-card">
+                        <h3>Increase Staking Liquidity</h3>
+                        <p>Add more funds to your existing staking position to earn more rewards.</p>
+                    </div>
+
+                    <!-- Wallet Balances Display -->
+                    <div class="wallet-balances">
+                        <h3>Wallet Balances</h3>
+                        <div id="walletBalancesDisplay2" class="balances-grid">
+                            <!-- Will be populated by JavaScript -->
+                            <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Position</label>
                         <select>
-                            <option>Full Range - Required For Staking</option>
-                            <!---
-                            <option>Narrow (±10%)</option>
-                            <option>Wide (±50%)</option>
-                            <option>Custom</option>
-                            -->
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
 
+                    <div class="info-card">
+                        <h3>Current Selected Position</h3>
+                        <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
+                        <p><strong>Current Liquidity:</strong> $1,250.00</p>
+                    <!--  <p><strong>Unclaimed Rewards:</strong> $12.50</p>--> 
+                    </div>
+
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Add <span id="tokenALabelINC">ETH</span></label>
+                            <input type="number" id="tokenAAmount" placeholder="0.01" step="0.000001" value=1>
+                        </div>
+                        <div class="form-group">
+                            <label>Add <span id="tokenBLabelINC">USDC</span></label>
+                            <input type="number" id="tokenBAmount" placeholder="0.01" step="0.000001" value=2>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label>Hook Address</label>
+                        <label>New Total Liquidity</label>
+                        <input type="text" value="$1,250.00" readonly style="background: #f8f9fa;">
+                    </div>
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceStakeIncrease"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
+                            </select>
+                        </div>
+
+                    <button class="btn-primary" onclick="increaseLiquidityStaking()">Increase Staking Position</button>
+                </div>
+
+                <!-- Staking Decrease Liquidity Page -->
+                <div id="stake-decrease" class="page">
+                    <div class="info-card">
+                        <h3>Decrease Staking Liquidity</h3>
+                        <p>Remove funds from your staking position and claim accumulated rewards.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Position</label>
                         <select>
-                            <option>Use Dynamic Fee Hook - Required For Staking</option>
-                            <!---
-                            <option>Narrow (±10%)</option>
-                            <option>Wide (±50%)</option>
-                            <option>Custom</option>
-                            -->
+                            <!-- Options will be populated by JavaScript -->
                         </select>
                     </div>
 
+                    <div class="info-card">
+                        <h3>Position Details</h3>
+                        <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
+                        <p><strong>Total Staked:</strong> $1,250.00</p>
+                        <p><strong>Unclaimed Rewards:</strong> $12.50</p>
+                        <p><strong>APY:</strong> 8.75%</p>
+                    </div>
 
                     <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceCreate"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
+                        <label>Removal Percentage</label>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="100" value="25" class="slider">
+                            <div class="percentage-display" id="stakePercentageDisplay">25%</div>
+                        </div>
                     </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label><span id="tokenALabelDec">ETH</span> to Recieve</label>
+                            <input type="text" value="0.156 ETH" readonly style="background: #f8f9fa;" id="tokenAAmountDec">
+                        </div>
+                        <div class="form-group">
+                            <label><span id="tokenBLabelDec">USDC</span> to Recieve</label>
+                            <input type="text" value="312.50 USDC" readonly style="background: #f8f9fa;" id="tokenBAmountDec">
+                        </div>
+                    </div>
+
+                        <div class="form-group">
+                            <label>Slippage Tolerance</label>
+                            <select id="slippageToleranceStakeDecrease"> 
+                                <option>0.1%</option>
+                                <option>0.5%</option>
+                                <option>1.0%</option>
+                                <option>2.0%</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-primary" onclick="decreaseLiquidityStaking()">Decrease Liquidity on Staked NFT</button>
+
                 </div>
 
-                <div class="form-group">
-                    <label>Estimated Pool Share</label>
-                    <input type="text" value="0.00%" readonly style="background: #f8f9fa;">
-                </div>
 
-                <button class="btn-primary" onclick="getCreatePosition()">Create Position</button>
-                <button class="btn-primary" onclick="getRatioCreatePositiontokenA()">getRatioCreatePositiontokenA Position</button>
-                <button class="btn-primary" onclick="getRatioCreatePositiontokenB()">getRatioCreatePositiontokenB Position</button>
-                <button class="btn-primary" onclick="getMaxCreatePosition()">getMaxCreatePosition Button</button>
-                
+                <!-- Staking Decrease Liquidity Page -->
+                <div id="admin-functions" class="page">
+                    <div class="info-card">
+                        <h3>ADMIN FUNCTIONS FILL IN HERE</h3>
+                        <p>ADMIN FUNCTIONS FILL IN HERE2.</p>
+                        <p>Update Pool Fee and Add ERC20 Token Reward and Remove ERC20 Reward</p>
+                    </div>
+    <h1>Hook Admin Functions</h1>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>New Fee %</label>
+            <div style="position: relative; display: inline-block; width: 100%;">
+                <input type="number" 
+                    id="UpdateAdminFee" 
+                    value="1" 
+                    step="0.1" 
+                    min="0" 
+                    max="100"
+                    style="width: 100%; padding: 10px 25px 10px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <span style="position: absolute; left: 55px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none;">%</span>
             </div>
-
-
-            <!-- Increase Liquidity Page -->
-            <div id="increase" class="page">
-                <div class="info-card">
-                    <h3>Increase Liquidity</h3>
-                    <p>Add more funds to your existing liquidity position to earn more fees.</p>
-                </div>
-                <!-- Wallet Balances Display -->
-                <div class="wallet-balances">
-                    <h3>Wallet Balances</h3>
-                    <div id="walletBalancesDisplay" class="balances-grid">
-                        <!-- Will be populated by JavaScript -->
-                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
-                    </div>
-                </div>
-
-
-                <div class="form-group">
-                    <label>Select Position</label>
-                    <select>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="info-card">
-                    <h3>Current Selected Position</h3>
-                    <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
-                    <p><strong>Current Liquidity:</strong> $1,250.00</p>
-                    <p><strong>Unclaimed Fees:</strong> $12.50</p>
-                </div>
-  
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Add Total <span id="tokenALabel">ETH</span></label>
-                        <input type="number" id="tokenAAmount" placeholder="0.0" step="0.000001" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Add Total <span id="tokenBLabel">USDC</span></label>
-                        <input type="number" id="tokenBAmount" placeholder="0.0" step="0.000001" value="0">
-                    </div>
-                </div>
-                
-                <b>Adding Liquidity Automatically uses your unclaimed fees in the deposit</b><br></br>
-
-                <div class="form-group">
-                    <label>New Total Liquidity</label>
-                    <input type="text" value="$1,250.00" readonly style="background: #f8f9fa;">
-                </div>
-
-                    <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceIncreaseLiquidity"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
-                    </div>
-                <button class="btn-primary" onclick="increaseLiquidity()">Increase Liquidity</button>
-                <button class="btn-primary" onclick="getTokenIDsOwnedByMetamask()">Get Metamask StakedTokensOwned</button>
-                <button class="btn-primary" onclick="getTokenIDsOwnedByStaking()">Get Staking Contracted Owned NFTs</button>
-            </div>
-
-
-            <!-- Decrease Liquidity Page -->
-            <div id="decrease" class="page">
-                <div class="info-card">
-                    <h3>Decrease Liquidity</h3>
-                    <p>Remove funds from your liquidity position and claim accumulated fees.</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Select Position</label>
-                    <select onchange="updatePositionInfo()">
-                    </select>
-                </div>
-
-                <div class="info-card">
-                    <h3>Position Details</h3>
-                    <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
-                    <p><strong>Total Liquidity:</strong> $1,250.00</p>
-                    <p><strong>Unclaimed Fees:</strong> $12.50</p>
-                    <p><strong>Position Age:</strong> 15 days</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Removal Percentage</label>
-                    <div class="slider-container">
-                        <input type="range" min="0" max="100" value="25" class="slider" onchange="updatePercentage(this.value)">
-                        <div class="percentage-display" id="percentageDisplay">25%</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><span id="tokenALabel">ETH</span> to Recieve</label>
-                        <input type="text" value="0.156 ETH" readonly style="background: #f8f9fa;" id="tokenAAmount">
-                    </div>
-                    <div class="form-group">
-                        <label><span id="tokenBLabel">USDC</span> to Recieve</label>
-                        <input type="text" value="312.50 USDC" readonly style="background: #f8f9fa;" id="tokenBAmount">
-                    </div>
-                </div>
-
-<b>Remving Liquidity Automatically claims your unclaimed fees.</b><br></br>
-
-                <div class="form-group">
-                    <label>Fees to Claim</label>
-                    <input type="text" value="$12.50" readonly style="background: #f8f9fa;">
-                </div>
-
-                    <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceDecrease"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
-                    </div>
-                <button class="btn-primary" onclick="decreaseLiquidity()">Remove Liquidity & Claim Fees</button>
-            </div>
-
-            <!-- Staking Increase Liquidity Page -->
-             <!-- Staking Increase Liquidity Page -->
-            <div id="stakeincrease" class="page">
-                <div class="info-card">
-                    <h3>Increase Staking Liquidity</h3>
-                    <p>Add more funds to your existing staking position to earn more rewards.</p>
-                </div>
-
-                <!-- Wallet Balances Display -->
-                <div class="wallet-balances">
-                    <h3>Wallet Balances</h3>
-                    <div id="walletBalancesDisplay2" class="balances-grid">
-                        <!-- Will be populated by JavaScript -->
-                        <p style="color: #6c757d; font-style: italic;">Loading wallet balances...</p>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Select Position</label>
-                    <select>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="info-card">
-                    <h3>Current Selected Position</h3>
-                    <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
-                    <p><strong>Current Liquidity:</strong> $1,250.00</p>
-                  <!--  <p><strong>Unclaimed Rewards:</strong> $12.50</p>--> 
-                </div>
-
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Add <span id="tokenALabelINC">ETH</span></label>
-                        <input type="number" id="tokenAAmount" placeholder="0.01" step="0.000001" value=1>
-                    </div>
-                    <div class="form-group">
-                        <label>Add <span id="tokenBLabelINC">USDC</span></label>
-                        <input type="number" id="tokenBAmount" placeholder="0.01" step="0.000001" value=2>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>New Total Liquidity</label>
-                    <input type="text" value="$1,250.00" readonly style="background: #f8f9fa;">
-                </div>
-                    <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceStakeIncrease"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
-                    </div>
-
-                <button class="btn-primary" onclick="increaseLiquidityStaking()">Increase Staking Position</button>
-            </div>
-
-            <!-- Staking Decrease Liquidity Page -->
-            <div id="stake-decrease" class="page">
-                <div class="info-card">
-                    <h3>Decrease Staking Liquidity</h3>
-                    <p>Remove funds from your staking position and claim accumulated rewards.</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Select Position</label>
-                    <select>
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                </div>
-
-                <div class="info-card">
-                    <h3>Position Details</h3>
-                    <p><strong>Pool:</strong> ETH/USDC (0.30%)</p>
-                    <p><strong>Total Staked:</strong> $1,250.00</p>
-                    <p><strong>Unclaimed Rewards:</strong> $12.50</p>
-                    <p><strong>APY:</strong> 8.75%</p>
-                </div>
-
-                <div class="form-group">
-                    <label>Removal Percentage</label>
-                    <div class="slider-container">
-                        <input type="range" min="0" max="100" value="25" class="slider">
-                        <div class="percentage-display" id="stakePercentageDisplay">25%</div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label><span id="tokenALabelDec">ETH</span> to Recieve</label>
-                        <input type="text" value="0.156 ETH" readonly style="background: #f8f9fa;" id="tokenAAmountDec">
-                    </div>
-                    <div class="form-group">
-                        <label><span id="tokenBLabelDec">USDC</span> to Recieve</label>
-                        <input type="text" value="312.50 USDC" readonly style="background: #f8f9fa;" id="tokenBAmountDec">
-                    </div>
-                </div>
-
-                    <div class="form-group">
-                        <label>Slippage Tolerance</label>
-                        <select id="slippageToleranceStakeDecrease"> 
-                            <option>0.1%</option>
-                            <option>0.5%</option>
-                            <option>1.0%</option>
-                            <option>2.0%</option>
-                        </select>
-                    </div>
-
-                    <button class="btn-primary" onclick="decreaseLiquidityStaking()">Decrease Liquidity on Staked NFT</button>
-
-            </div>
-
-
-            <!-- Staking Decrease Liquidity Page -->
-            <div id="admin-functions" class="page">
-                <div class="info-card">
-                    <h3>ADMIN FUNCTIONS FILL IN HERE</h3>
-                    <p>ADMIN FUNCTIONS FILL IN HERE2.</p>
-                    <p>Update Pool Fee and Add ERC20 Token Reward and Remove ERC20 Reward</p>
-                </div>
-<h1>Hook Admin Functions</h1>
-
- <div class="form-row">
-    <div class="form-group">
-        <label>New Fee %</label>
-        <div style="position: relative; display: inline-block; width: 100%;">
-            <input type="number" 
-                   id="UpdateAdminFee" 
-                   value="1" 
-                   step="0.1" 
-                   min="0" 
-                   max="100"
-                   style="width: 100%; padding: 10px 25px 10px 10px; border: 1px solid #ddd; border-radius: 4px;">
-            <span style="position: absolute; left: 55px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none;">%</span>
         </div>
     </div>
-</div>
-                    <button class="btn-primary" onclick="updateAdminFeeForPool()">Update Admin PooL Fee</button>
-                <br></br><br></br><br></br><h1>Staking Admin Functions</h1>
+                        <button class="btn-primary" onclick="updateAdminFeeForPool()">Update Admin PooL Fee</button>
+                    <br></br><br></br><br></br><h1>Staking Admin Functions</h1>
 
 
-  <!-- Basic Address Input -->
-    <div class="form-group">
-        <label for="basic-address-Add">Add ERC20 to Staking</label>
-        <input type="text" 
-               id="basic-address-add" 
-               class="address-input"
-               placeholder="0x1234567890abcdef1234567890abcdef12345678"
-               maxlength="42">
-    </div>
-                    <button class="btn-primary" onclick="addERC20ToStakingContract()">Add ERC20 to Staking Contract</button>
-<br></br><br></br>
-  <!-- Basic Address Input -->
-    <div class="form-group">
-        <label for="basic-address-Remove">Remove ERC20 from Staking</label>
-        <input type="text" 
-               id="basic-address-remove" 
-               class="address-input"
-               placeholder="0x2222567890abcdef1234567890abcdef12345678"
-               maxlength="42">
-    </div>
+    <!-- Basic Address Input -->
+        <div class="form-group">
+            <label for="basic-address-Add">Add ERC20 to Staking</label>
+            <input type="text" 
+                id="basic-address-add" 
+                class="address-input"
+                placeholder="0x1234567890abcdef1234567890abcdef12345678"
+                maxlength="42">
+        </div>
+                        <button class="btn-primary" onclick="addERC20ToStakingContract()">Add ERC20 to Staking Contract</button>
+    <br></br><br></br>
+    <!-- Basic Address Input -->
+        <div class="form-group">
+            <label for="basic-address-Remove">Remove ERC20 from Staking</label>
+            <input type="text" 
+                id="basic-address-remove" 
+                class="address-input"
+                placeholder="0x2222567890abcdef1234567890abcdef12345678"
+                maxlength="42">
+        </div>
 
-                    <button class="btn-primary" onclick="removeERC20FromStakingContract()">Remove ERC20 to Staking Contract</button>
+                        <button class="btn-primary" onclick="removeERC20FromStakingContract()">Remove ERC20 to Staking Contract</button>
+
+                </div>
+
+
+
+
+
+
 
             </div>
-
-
-
-
-
-
-
         </div>
+
     </div>
 
     <script>
 
+            initializeDApp();
 
 
+    // Loading screen management
+        function updateLoadingStatus(message) {
+            document.getElementById('loading-status').textContent = message;
+        }
 
+        function hideLoadingScreen() {
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+
+        // Simulate your dApp initialization
+        async function initializeDApp() {
+            try {
+                updateLoadingStatus('Connecting to blockchain...');
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                updateLoadingStatus('Loading smart contracts...');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                updateLoadingStatus('Fetching data...');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                updateLoadingStatus('Initializing interface...');
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                updateLoadingStatus('Ready!');
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                hideLoadingScreen();
+            } catch (error) {
+                console.error('Failed to initialize dApp:', error);
+                updateLoadingStatus('Error loading dApp. Please refresh.');
+            }
+        }
 
 
 function updateStakingStats() {
