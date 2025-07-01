@@ -2013,7 +2013,20 @@ async function getRewardStats(){
                                     ],
                                     "stateMutability": "view",
                                     "type": "function"
-                                    }
+                                    },
+                                    {
+                                        "inputs": [],
+                                        "name": "duration_of_rewards",
+                                        "outputs": [
+                                            {
+                                            "internalType": "uint64",
+                                            "name": "",
+                                            "type": "uint64"
+                                            }
+                                        ],
+                                        "stateMutability": "view",
+                                        "type": "function"
+                                        }
                         ];
 
 
@@ -2026,6 +2039,7 @@ async function getRewardStats(){
                         signer // Use signer since the function isn't view/pure
                     );
 
+        const resultDuration = await LPRewarsdStakingContract.duration_of_rewards();
         const result = await LPRewarsdStakingContract.getRewardOwedStats();
                           
           var rewardAddressesStaking = result[0];
@@ -2093,7 +2107,8 @@ try {
     console.error("Still can't parse:", error);
 }
 
-var Rewardduration = 300; //300 seconds
+var Rewardduration = parseFloat(resultDuration.toString()); //300 seconds
+console.log("Reward Duration is how many seconds = ", Rewardduration);
             for(var x=0; x<rewardAddressesStaking.length; x++){
                 console.log("X = ", x);
                 const timestamp = rewardtokenPeriodEndsAt[x].toString();
