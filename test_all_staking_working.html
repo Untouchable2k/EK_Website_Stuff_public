@@ -796,6 +796,73 @@
             animation: fadeIn 0.8s ease forwards 1.5s;
         }
 
+
+
+
+
+
+
+
+
+
+
+
+               .toggle-container {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        .toggle-label {
+            margin-left: 10px;
+            vertical-align: middle;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
@@ -874,7 +941,14 @@
                         <button class="btn-secondary" onclick="restoreDefaultAddresses()">Restore Defaults </button>
                         <button class="btn-primary" onclick="saveAddresses()">Save Addresses</button>
                     </div>
-                    <div id="addressSuccess" class="success-message">Contract addresses saved successfully!</div>
+                <div id="addressSuccess" class="success-message">Contract addresses saved successfully!</div>
+                            <div class="toggle-container">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="toggle1" data-save-key="feature_notifications">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                                <span class="toggle-label">Get New Reward Tokens from Contract Automatically</span>
+                            </div>
                 </div>
                 <div class="settings-form">
                     <h3>🔒 Minimum Staking Configuration</h3>
@@ -1092,7 +1166,6 @@
                     </div>
                         <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
 
-                    <button onclick="calculateNewRewards()">Calculate New Rewards</button>
 
                 </div>
 
@@ -1190,15 +1263,11 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Estimated Pool Share</label>
-                        <input type="text" value="0.00%" readonly style="background: #f8f9fa;">
-                    </div>
 
                     <button class="btn-primary" onclick="getCreatePosition()">Create Position</button>
-                    <button class="btn-primary" onclick="getRatioCreatePositiontokenA()">getRatioCreatePositiontokenA Position</button>
+                 <!--   <button class="btn-primary" onclick="getRatioCreatePositiontokenA()">getRatioCreatePositiontokenA Position</button>
                     <button class="btn-primary" onclick="getRatioCreatePositiontokenB()">getRatioCreatePositiontokenB Position</button>
-                    <button class="btn-primary" onclick="getMaxCreatePosition()">getMaxCreatePosition Button</button>
+                    <button class="btn-primary" onclick="getMaxCreatePosition()">getMaxCreatePosition Button</button> -->
                     
                 </div>
 
@@ -1261,8 +1330,9 @@
                             </select>
                         </div>
                     <button class="btn-primary" onclick="increaseLiquidity()">Increase Liquidity</button>
-                    <button class="btn-primary" onclick="getTokenIDsOwnedByMetamask()">Get Metamask StakedTokensOwned</button>
+               <!--      <button class="btn-primary" onclick="getTokenIDsOwnedByMetamask()">Get Metamask StakedTokensOwned</button>
                     <button class="btn-primary" onclick="getTokenIDsOwnedByStaking()">Get Staking Contracted Owned NFTs</button>
+                    -->
                 </div>
 
 
@@ -1505,7 +1575,21 @@
     </div>
 
     <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('toggle1');
+    const saveKey = toggle.dataset.saveKey;
 
+    // Load saved state
+    const savedState = localStorage.getItem(saveKey);
+    if (savedState !== null) {
+        toggle.checked = savedState === 'true';
+    }
+
+    // Save state on change
+    toggle.addEventListener('change', () => {
+        localStorage.setItem(saveKey, toggle.checked);
+    });
+});
             initializeDApp();
 
 
@@ -1807,6 +1891,15 @@ function populateStakingManagementData() {
 await loadPositionsIntoDappSelections();
 
             throttledGetSqrtRtAndPriceRatio("ConnectWallet");
+
+    const toggle = document.getElementById('#settings toggle1');
+    if(toggle1.checked){
+        console.log ("contractAddresses MATCH ");
+       await restoreDefaultAddressesfromContract();
+    }
+
+
+
             return userAddress;
             }
         } catch (error) {
@@ -3450,11 +3543,6 @@ if (increaseStaking) {
 console.log("contractAddresses value = " ,document.getElementById('contractAddresses').value);
 
 console.log("contractAddresses defaultAddresses= " ,defaultAddresses);
-if(document.getElementById('contractAddresses').value == defaultAddresses){
-    console.log ("contractAddresses MATCH ");
-    restoreDefaultAddressesfromContract();
-}
-
 
 
 
