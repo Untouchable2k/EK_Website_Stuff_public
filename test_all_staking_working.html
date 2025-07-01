@@ -1691,6 +1691,9 @@ function populateStakingManagementData() {
                        await getTokenIDsOwnedByMetamask();
                         await getRewardStats();
     await checkAdminAccess();
+
+await loadPositionsIntoDappSelections();
+
             throttledGetSqrtRtAndPriceRatio("ConnectWallet");
             return userAddress;
             }
@@ -2321,13 +2324,14 @@ const stakingPositionData = {
 
 
 
-function updatePositionInfoMAIN_STAKING() {
+async function updatePositionInfoMAIN_STAKING() {
     const positionSelect = document.querySelector('#staking-main-page select');
     const selectedPositionId = positionSelect.value;
     const position = positionData[selectedPositionId];
     
     if (!position) return;
     
+    await getRewardStats();
     
     console.log("updatePositionInfoMAIN_STAKING");
     var positionLiq = parseFloat(position.currentLiquidity);
@@ -2350,7 +2354,7 @@ document.getElementById('estimatedRewards').value = percentOfStaking.toFixed(6)*
 
 
 
-function updatePositionInfoMAIN_UNSTAKING() {
+async function updatePositionInfoMAIN_UNSTAKING() {
     console.log('staking-main-page:', document.querySelector('#staking-main-page'));
 console.log('form-group2:', document.querySelector('#staking-main-page .form-group2'));
 console.log('select:', document.querySelector('#staking-main-page .form-group2 select'));
@@ -2362,7 +2366,7 @@ console.log('select:', document.querySelector('#staking-main-page .form-group2 s
 
     console.log("Success position: ",position);
     
-    
+    await getRewardStats();
     var positionLiq = parseFloat(position.currentLiquidity);
     var percentOfStaking = positionLiq/(parseFloat(totalLiquidityInStakingContract.toString())+positionLiq);
 
@@ -5019,7 +5023,7 @@ const [fees0a, fees1a] = tokenAddress < Address_ZEROXBTC_TESTNETCONTRACT
                         console.log("Increased Liquidity transaction confirmed in block:", receipt12.blockNumber);
                         console.log(`Deposited ${ ethers.utils.formatEther(amountInB0x.toString())} tokens and another ${ethers.utils.formatUnits(amountIn0xBTC.toString(), 8)} tokens into tokenID: ${positionID}`);
                          fetchBalances();
-                         getTokenIDsOwnedByMetamask();
+                         await getTokenIDsOwnedByMetamask();
                             // If you want to use these values for further operations
                             // For example, if there's a deploy function that uses the salt
                             // await UniV4Hook.deploy(validSalt);
@@ -5871,7 +5875,7 @@ amountInput.addEventListener('change', handleAmountChange);
         if (typeof fetchBalances === 'function') {
             fetchBalances();
         }
-        getTokenIDsOwnedByMetamask();
+       await getTokenIDsOwnedByMetamask();
         // Clear the input
         amountInput.value = '0.0';
 
@@ -6261,6 +6265,22 @@ function toBigNumber(value) {
 
 
 
+// Fix: Handle arrays by summing all BigNumbers in each array
+function sumBigNumberArray(bigNumberArray) {
+    if (!Array.isArray(bigNumberArray)) {
+        return toBigNumber(bigNumberArray);
+    }
+    
+    let sum = ethers.BigNumber.from(0);
+    for (let i = 0; i < bigNumberArray.length; i++) {
+        if (ethers.BigNumber.isBigNumber(bigNumberArray[i])) {
+            sum = sum.add(bigNumberArray[i]);
+        } else {
+            sum = sum.add(toBigNumber(bigNumberArray[i]));
+        }
+    }
+    return sum;
+}
 
 // Approve function
 async function approveToken(tokenToApprove, spenderAddress, amount) {
@@ -6508,7 +6528,7 @@ function cleanupPositionData() {
     // Clean positionData
     Object.keys(positionData).forEach(key => {
         const idNumber = parseInt(key.split('_')[1]);
-        if (idNumber > 100) {
+        if (idNumber > 0) {
             delete positionData[key];
         }
     });
@@ -6516,7 +6536,7 @@ function cleanupPositionData() {
     // Clean stakingPositionData
     Object.keys(stakingPositionData).forEach(key => {
         const idNumber = parseInt(key.split('_')[2]); // stake_position_X
-        if (idNumber > 100) {
+        if (idNumber > 0) {
             delete stakingPositionData[key];
         }
     });
@@ -7044,8 +7064,8 @@ var maxTokenPossible_STAKING =0;
   let poolInfoi = [];
   let PoolKeyCurrency0 = [];
   let PoolKeyCurrency1= [];
-var totalStakedToken0 = 0;
-var totalStakedToken1 = 0;
+var totalStakedToken0 = toBigNumber(0);
+var totalStakedToken1 = toBigNumber(0);
   for (let x = 0; x < NumberOfLoops; x++) {
     const startId = startSearchAt + (maxLoopLookups * x);
     const endId = Math.min(startId + maxLoopLookups -1, maxTokenPossible);
@@ -7086,8 +7106,11 @@ var worked = 1;
     // Concatenate arrays properly using spread operator or concat
     ownedTokenIdsOFSwapperOnStaked = ownedTokenIdsOFSwapperOnStaked.concat(result[0]);
 
-     totalStakedToken0 = totalStakedToken0 + result[1];
-     totalStakedToken1 = totalStakedToken1 + result[2];
+
+// Now add the arrays properly
+totalStakedToken0 = totalStakedToken0.add(sumBigNumberArray(result[1]));
+totalStakedToken1 = totalStakedToken1.add(sumBigNumberArray(result[2]));
+
     OWNEDtOKEN1 = OWNEDtOKEN1.concat(result[1]);
     OWNEDtOKEN2 = OWNEDtOKEN2.concat(result[2]);
     liquidity = liquidity.concat(result[3]);
