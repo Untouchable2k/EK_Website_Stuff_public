@@ -1917,7 +1917,9 @@ var Rewardduration = 300; //300 seconds
 
 
         const result2 = await LPRewarsdStakingContract.totalSupply();
-                  totalLiquidityInStakingContract = result2;        
+                  totalLiquidityInStakingContract = result2;      
+                  
+                  console.log("totalLiquidityInStakingContract called! result = ",totalLiquidityInStakingContract.toString());
             populateStakingManagementData();
 }
 
@@ -2324,14 +2326,13 @@ const stakingPositionData = {
 
 
 
-async function updatePositionInfoMAIN_STAKING() {
+ function updatePositionInfoMAIN_STAKING() {
     const positionSelect = document.querySelector('#staking-main-page select');
     const selectedPositionId = positionSelect.value;
     const position = positionData[selectedPositionId];
     
     if (!position) return;
     
-    await getRewardStats();
     
     console.log("updatePositionInfoMAIN_STAKING");
     var positionLiq = parseFloat(position.currentLiquidity);
@@ -2354,7 +2355,7 @@ document.getElementById('estimatedRewards').value = percentOfStaking.toFixed(6)*
 
 
 
-async function updatePositionInfoMAIN_UNSTAKING() {
+ function updatePositionInfoMAIN_UNSTAKING() {
     console.log('staking-main-page:', document.querySelector('#staking-main-page'));
 console.log('form-group2:', document.querySelector('#staking-main-page .form-group2'));
 console.log('select:', document.querySelector('#staking-main-page .form-group2 select'));
@@ -2366,12 +2367,6 @@ console.log('select:', document.querySelector('#staking-main-page .form-group2 s
 
     console.log("Success position: ",position);
     
-    await getRewardStats();
-    var positionLiq = parseFloat(position.currentLiquidity);
-    var percentOfStaking = positionLiq/(parseFloat(totalLiquidityInStakingContract.toString())+positionLiq);
-
-document.getElementById('estimatedRewards').value = percentOfStaking.toFixed(6)*100 + "%";
-
 
     const infoCard = document.querySelector('#staking-main-page .info-card');
 
