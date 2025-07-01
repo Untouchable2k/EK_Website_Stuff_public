@@ -2556,6 +2556,7 @@ function updatePositionInfo() {
     // Clear input values when position changes
     const inputs = document.querySelectorAll('#increase input[type="number"]');
     inputs.forEach(input => input.value = '0');
+    updateTotalLiqIncrease();
     
 }
 
