@@ -1783,10 +1783,13 @@ function populateStakingManagementData() {
             userAddress = accounts[0];
             walletConnected = true;
             
+
+            // Switch to Base Sepolia network
+            await switchToBaseSepolia();
+
             localStorage.setItem('walletConnected', 'true');
             localStorage.setItem('walletAddress', userAddress);
             
-            await ethereum.request({ method: 'eth_requestAccounts' });
             provider = new ethers.providers.Web3Provider(window.ethereum);
             signer = provider.getSigner();
 
@@ -1813,6 +1816,46 @@ await loadPositionsIntoDappSelections();
         }
 
 
+
+async function switchToBaseSepolia() {
+    const baseSepoliaConfig = {
+        chainId: '0x14A34', // 84532 in hex
+        chainName: 'Base Sepolia',
+        nativeCurrency: {
+            name: 'Ethereum',
+            symbol: 'ETH',
+            decimals: 18
+        },
+        rpcUrls: ['https://sepolia.base.org'],
+        blockExplorerUrls: ['https://sepolia.basescan.org/']
+    };
+    
+    try {
+        // Try to switch to Base Sepolia
+        await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: baseSepoliaConfig.chainId }]
+        });
+        console.log('Switched to Base Sepolia network');
+    } catch (switchError) {
+        // If network doesn't exist, add it
+        if (switchError.code === 4902) {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [baseSepoliaConfig]
+                });
+                console.log('Added and switched to Base Sepolia network');
+            } catch (addError) {
+                console.error('Failed to add Base Sepolia network:', addError);
+                throw new Error('Failed to add Base Sepolia network');
+            }
+        } else {
+            console.error('Failed to switch to Base Sepolia network:', switchError);
+            throw new Error('Failed to switch to Base Sepolia network');
+        }
+    }
+}
 
 
 var totalLiquidityInStakingContract =0;
