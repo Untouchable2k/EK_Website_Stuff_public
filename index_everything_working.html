@@ -863,6 +863,96 @@
             font-size: 16px;
         }
 
+
+
+
+
+
+
+
+
+
+        .wallet-balances {
+            margin-bottom: 20px;
+        }
+
+        .wallet-balances h3 {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .balances-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .balance-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .balance-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .balance-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 8px 8px 0 0;
+        }
+
+        .token-name {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .token-amount {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #212529;
+            word-break: break-all;
+        }
+
+        .loading-text {
+            color: #6c757d;
+            font-style: italic;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .balances-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1575,6 +1665,9 @@
     </div>
 
     <script>
+        var initializeStep = 0;
+            console.log("INITLIAZE STEP : ", initializeStep);
+
 document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('toggle1');
     const saveKey = toggle.dataset.saveKey;
@@ -1592,7 +1685,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
             initializeDApp();
 
-
     // Loading screen management
         function updateLoadingStatus(message) {
             document.getElementById('loading-status').textContent = message;
@@ -1603,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('main-content').style.display = 'block';
         }
 
-        // Simulate your dApp initialization
+        /* Simulate your dApp initialization
         async function initializeDApp() {
             try {
                 updateLoadingStatus('Connecting to blockchain...');
@@ -1627,7 +1719,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateLoadingStatus('Error loading dApp. Please refresh.');
             }
         }
+        */
 
+async function initializeDApp() {
+    try {
+        while (initializeStep < 10) {
+            switch (initializeStep) {
+                case 0:
+                    updateLoadingStatus('Connecting to blockchain...');
+                    initializeStep = 5;
+                    break;
+                case 5:
+                    updateLoadingStatus('Loading smart contracts...');
+                    updateLoadingStatus('Fetching data...');
+                    initializeStep = 8;
+                    break;
+                case 8:
+                    updateLoadingStatus('Initializing interface...');
+                    initializeStep = 10;
+                    break;
+            }
+            
+            // Small delay to make the transitions visible
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        // Final step
+        updateLoadingStatus('Ready!');
+        await new Promise(resolve => setTimeout(resolve, 500));
+        hideLoadingScreen();
+        
+    } catch (error) {
+        console.error('Failed to initialize dApp:', error);
+        updateLoadingStatus('Error loading dApp. Please refresh.');
+    }
+}
 
 function updateStakingStats() {
     const container = document.querySelector('#staking-main-page #stakingStatsContainer');
@@ -1833,11 +1959,9 @@ function populateStakingManagementData() {
             const accounts = await window.ethereum.request({
                 method: 'eth_accounts'
             });
-            
+
             if (accounts.length > 0) {
-                userAddress = accounts[0];
-                walletConnected = true;
-                updateWalletUI(userAddress, true);
+                await connectWallet();
             }
             } catch (error) {
             console.error('Error checking wallet connection:', error);
@@ -1848,6 +1972,7 @@ function populateStakingManagementData() {
             let provider = "";
             let signer =  "";
         async function connectWallet() {
+            console.log("ConnectWallet");
         if (walletConnected) {
             console.log('Wallet already connected');
             return userAddress;
@@ -2603,6 +2728,8 @@ document.getElementById('estimatedRewards').value = percentOfStaking.toFixed(6)*
 
     `;
     
+initializeStep = 8;
+   console.log("INITLIAZE STEP : ", initializeStep);
 
 
 }
@@ -3150,6 +3277,8 @@ async function restoreDefaultAddressesfromContract() {
 document.addEventListener('DOMContentLoaded', function() {
     
     document.getElementById('contractAddresses').value = defaultAddresses;
+initializeStep = 5;
+    console.log("INITLIAZE STEP : ", initializeStep);
 
     // Set up position selector for regular increase
     const positionSelect = document.querySelector('#increase select');
@@ -3555,6 +3684,8 @@ console.log("contractAddresses defaultAddresses= " ,defaultAddresses);
 
 
 
+initializeStep = 10;    
+console.log("INITLIAZE STEP : ", initializeStep);
 
 
 });
