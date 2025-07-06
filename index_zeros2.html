@@ -7754,6 +7754,7 @@ async function getRatioCreatePositiontokenB(){
     
     if(parseFloat(zeroxbtcdecimal) > parseFloat(wallet_zeroxbtc)){
         alert("Too much 0xBTC - you don't have enough, lower the amount!");
+        await getMaxCreatePosition();
         return;
     }
     
@@ -7762,6 +7763,7 @@ async function getRatioCreatePositiontokenB(){
     
     if(parseFloat(b0xdecimal) > parseFloat(wallet_b0x)){
         alert("Too much B0x - you don't have enough, lower the amount!");
+        await getMaxCreatePosition();
         return;
     }
 
@@ -7775,9 +7777,11 @@ async function getRatioCreatePositiontokenB(){
         if(tokenAinputAddress === Address_ZEROXBTC_TESTNETCONTRACT) {
             // TokenA is 0xBTC
             amountInputA.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
+            amountInputB.value = ethers.utils.formatUnits(amountToDeposit,18);
         } else {
             // TokenA is B0x
             amountInputA.value = ethers.utils.formatUnits(amountToDeposit, 18);
+            amountInputB.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
         }
 
         ratiozToSave = 10000 * amountToDepositBN / amountToDepositBN2;
@@ -8022,14 +8026,16 @@ const minAmountOutBN = ethers.BigNumber.from(MinamountOut.toFixed(0).toString())
                 );
                 */
 
-                if(tokenAinputAddress == Address_ZEROXBTC_TESTNETCONTRACT) {
-                    //commented out we dont update A in A.
-                   amountInputB.value = ethers.utils.formatUnits(amountToDeposit, 18);
-               //     amountInputA.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
-                } else {
-                    amountInputB.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
-                 //   amountInputA.value = ethers.utils.formatUnits(amountToDeposit, 18);
-                }
+        // Update ONLY TokenA input (don't touch TokenB since user is typing in it)
+        if(tokenAinputAddress === Address_ZEROXBTC_TESTNETCONTRACT) {
+            // TokenA is 0xBTC
+            amountInputA.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
+            amountInputB.value = ethers.utils.formatUnits(amountToDeposit,18);
+        } else {
+            // TokenA is B0x
+            amountInputA.value = ethers.utils.formatUnits(amountToDeposit, 18);
+            amountInputB.value = ethers.utils.formatUnits(amountWith8Decimals0xBTC, 8);
+        }
 
             ratiozToSave = 10000*amountToDepositBN / amountToDepositBN2;
 
