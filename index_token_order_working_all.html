@@ -988,6 +988,25 @@
     cursor: not-allowed;
 }
 
+#increaseLiquidityBtn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+
+
+
+#increaseLiquidityStakedBtn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+#depositNFTStakeBtn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
+#withdrawNFTStakeBtn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+}
 
     </style>
 </head>
@@ -1271,7 +1290,7 @@
                         <input type="text" id="estimatedRewards" value="0.00 B0x" readonly style="background: #f8f9fa;">
                     </div>
 
-                        <button class="btn-success" onclick="depositNFTStake()">Deposit NFT</button><br></br><br></br>
+                        <button class="btn-success" id="depositNFTStakeBtn" onclick="depositNFTStake()">Deposit NFT</button><br></br><br></br>
 
                     <div class="info-card3">
                         <h2>Uniswap v4 NFT Token Withdrawing</h2>
@@ -1290,7 +1309,8 @@
                                 <option>UNDAI - UNDai Stablecoin</option>
                             </select>
                     </div>
-                        <button class="btn-warning" onclick="withdrawStake()">Withdraw</button>
+
+                        <button class="btn-warning" id="withdrawNFTStakeBtn" onclick="withdrawStake()">Withdraw NFT from Staking</button>
 
 
                 </div>
@@ -1458,7 +1478,7 @@
                                 <option>2.0%</option>
                             </select>
                         </div>
-                    <button class="btn-primary" onclick="increaseLiquidity()">Increase Liquidity</button>
+                    <button class="btn-primary" id="increaseLiquidityBtn" onclick="increaseLiquidity()">Increase Liquidity</button>
                <!--      <button class="btn-primary" onclick="getTokenIDsOwnedByMetamask()">Get Metamask StakedTokensOwned</button>
                     <button class="btn-primary" onclick="getTokenIDsOwnedByStaking()">Get Staking Contracted Owned NFTs</button>
                     -->
@@ -1589,7 +1609,7 @@
                             </select>
                         </div>
 
-                    <button class="btn-primary" onclick="increaseLiquidityStaking()">Increase Staking Position</button>
+                    <button class="btn-primary" id="increaseLiquidityStakedBtn" onclick="increaseLiquidityStaking()">Increase Staked Position Liquidity</button>
                 </div>
 
                 <!-- Staking Decrease Liquidity Page -->
@@ -2741,8 +2761,16 @@ var stakingPositionData = {
     const selectedPositionId = positionSelect.value;
     const position = positionData[selectedPositionId];
     
-    if (!position) return;
-    
+    if (!position) {
+        
+    const infoCard = document.querySelector('#staking-main-page .info-card2');
+    infoCard.innerHTML = `<h3>NFT Position Info</h3>
+                        <p>Create Position to Stake Position</p>`;
+
+document.getElementById('estimatedRewards').value = "0%";
+ 
+    return;
+    }
     
     console.log("updatePositionInfoMAIN_STAKING");
     var positionLiq = parseFloat(position.currentLiquidity);
@@ -2772,8 +2800,17 @@ console.log('select:', document.querySelector('#staking-main-page .form-group2 s
     const positionSelect = document.querySelector('#staking-main-page .form-group2 select');
     const selectedPositionId = positionSelect.value;
     const position = stakingPositionData[selectedPositionId];
-    if (!position) return;
+    if (!position) {
+      
+               
+    const infoCard = document.querySelector('#staking-main-page .info-card');
+    infoCard.innerHTML = `<h3>Token Withdrawing</h3>
+                        <p>Unstake your Unsiwap NFT tokens below.</p>
+                        `;
 
+        
+        return;
+    }
 
     console.log("Success position: ",position);
     
@@ -2787,7 +2824,10 @@ console.log('select:', document.querySelector('#staking-main-page .form-group2 s
         <p><strong>Current Liquidity:</strong> ${position.currentLiquidity.toFixed(2)}</p>
         <p><strong>Total Liquidity:</strong> ${parseFloat(position.currentTokenA).toFixed(4)} ${position.tokenA} & ${parseFloat(position.currentTokenB).toFixed(4)} ${position.tokenB}</p>
 
-        <p style="font-weight: bold; font-size: 2em; color: red;"><strong>Penalty for Early Stake Withdrawl:</strong> ${position.PenaltyForWithdraw}</p>    `;
+        <p style="font-weight: bold; font-size: 2em; color: red;"><strong>Penalty for Early Stake Withdrawl:</strong> ${position.PenaltyForWithdraw}</p>    
+         <p>It is cheaper if you use Stake Decrease if you are only removing a portion of your funds from staking, cheaper than removing everthing and restaking.</p>
+                  
+        `;
     
 
 
@@ -2946,8 +2986,7 @@ function updateStakePositionInfo() {
     
     // Update new total liquidity field
     const totalLiquidityInput = document.querySelector('#stakeincrease input[readonly]');
-    totalLiquidityInput.value = `$#${parseFloat(position.currentTokenA).toFixed(4)} ${position.tokenA} & ${parseFloat(position.currentTokenB).toFixed(4)} ${position.tokenB};
-    `
+    totalLiquidityInput.value = `$${parseFloat(position.currentTokenA).toFixed(4)} ${position.tokenA} & ${parseFloat(position.currentTokenB).toFixed(4)} ${position.tokenB}`;
     // Clear input values when position changes
     const inputs = document.querySelectorAll('#stakeincrease input[type="number"]');
     inputs.forEach(input => input.value = '0');
@@ -3984,12 +4023,11 @@ var tokenAddresses1;
 
 async function  depositNFTStake(){
 
-
-
             if(!walletConnected){
                await connectWallet();
             }
 
+disableButtonWithSpinner('depositNFTStakeBtn');
 
     // Get position data for unclaimed fees
     const positionSelect = document.querySelector('#staking-main-page select');
@@ -4073,13 +4111,15 @@ async function  depositNFTStake(){
                         console.log("Staking transaction sent:", stakeTx.hash);
                         await stakeTx.wait(); // Wait for confirmation
                         console.log("NFT staked successfully!");
+                            enableButton('depositNFTStakeBtn', 'Deposit NFT');
                         alert("NFT STAKED SUCCESSFULLY!");
                         
                         fetchBalances();
-                         await getTokenIDsOwnedByMetamask();
                         await getRewardStats();
+                         await getTokenIDsOwnedByMetamask();
                     } catch (error) {
                         console.error("Error approving/staking NFT:", error);
+                            enableButton('depositNFTStakeBtn', 'Deposit NFT');
                     }
 
 }
@@ -4806,6 +4846,7 @@ function calculateWithSlippageBigNumber(amount, decimalValueSlippage) {
 
     async function increaseLiquidityStaking(){
 
+            disableButtonWithSpinner('increaseLiquidityStakedBtn');
 
             if(!walletConnected){
                await connectWallet();
@@ -5038,11 +5079,14 @@ const [fees0a, fees1a] = tokenAddress < Address_ZEROXBTC_TESTNETCONTRACT
                                     const receipt12 = await tx.wait();
                                 console.log("Increase Liq Transaction Confirmed@!")
 
+                            alert("Successfully Increased Liquidity of Staked NFT");
 
 
-
+                            enableButton('increaseLiquidityStakedBtn', 'Increase Staked Position Liquidity');
                         } catch (error) {
                             console.error(`Error approving tokens for  liquidty increase`, error);
+
+                             enableButton('increaseLiquidityStakedBtn', 'Increase Staked Position Liquidity');
                         }
                     
 
@@ -5070,6 +5114,8 @@ const [fees0a, fees1a] = tokenAddress < Address_ZEROXBTC_TESTNETCONTRACT
 
     async function increaseLiquidity() {
 
+
+            disableButtonWithSpinner('increaseLiquidityBtn');
 
 
             if(!walletConnected){
@@ -5425,7 +5471,10 @@ const [fees0a, fees1a] = tokenAddress < Address_ZEROXBTC_TESTNETCONTRACT
 
                         console.log("Increased Liquidity transaction confirmed in block:", receipt12.blockNumber);
                         console.log(`Deposited ${ ethers.utils.formatEther(amountInB0x.toString())} tokens and another ${ethers.utils.formatUnits(amountIn0xBTC.toString(), 8)} tokens into tokenID: ${positionID}`);
-                         fetchBalances();
+                       
+                        enableButton('increaseLiquidityBtn', 'Increase Liquidity');
+                        alert("Successfully increased Liquidity of position you own");
+                        fetchBalances();
                          await getTokenIDsOwnedByMetamask();
                             // If you want to use these values for further operations
                             // For example, if there's a deploy function that uses the salt
@@ -5685,16 +5734,16 @@ var walletBalances = {
 
 const USDCToken = "0x036CbD53842c5426634e7929541eC2318f3dCF7e";
 const positionManager_address = "0x4B2C77d209D3405F41a037Ec6c77F7F5b8e2ca80";
-const contractAddress_PositionFinderPro = '0xBa0494DEE870D98aAd07fC0980714Bf761a21b58'; // Replace with actual contract address
-const contractAddress_Swapper = '0x54697abaCC8B960A32c9C97Ce698Ec60e6Ef8038'; // Replace with actual contract address
-const contractAddressLPRewardsStaking = '0x0Ac1907c0CEa5834360accF65C520F30F990B9E9';
-const hookAddress = '0x5C863e6D52aBf5550675d8b9F518D84eeab15000';
+const contractAddress_PositionFinderPro = '0x9Ca6B8426FD1bDA92309Bb98e808F3281c2f2D58'; // Replace with actual contract address
+const contractAddress_Swapper = '0xa9c7b78C94e0AFB64a77670E7c7D43D9926869d7'; // Replace with actual contract address
+const contractAddressLPRewardsStaking = '0x59B0739E8e0B9D82088612E401f4BcC0601bd29f';
+const hookAddress = '0x82Cb406AE39394Abe3e6143e6e88ba8F316b5000';
 
 // Token addresses mapping
 const tokenAddresses = {
 'ETH': '0x0000000000000000000000000000000000000000', // Example addresses
-'B0x': '0x98112534110472D13c8af303bE2D84cB5cc29824',
-'0xBTC': '0xd09ded2D59eaFF0F53001f22A1c8292aB28b32A3',
+'B0x': '0x6D72aBc53BA97c1b9a03430D9254e76aaD102acD',
+'0xBTC': '0x84a1EC57f0A7fe63E3B87D57B09495216d6e1C0b',
 'WETH': '0x4200000000000000000000000000000000000006',
 };
 
@@ -5703,10 +5752,12 @@ const tokenAddresses = {
     const tokenMap = {
         "0x4200000000000000000000000000000000000006": "WETH",
         "0x0000000000000000000000000000000000000000": "ETH",
-        "0x98112534110472D13c8af303bE2D84cB5cc29824": "B0x",
-        "0xd09ded2D59eaFF0F53001f22A1c8292aB28b32A3": "0xBTC",
+        "0x6D72aBc53BA97c1b9a03430D9254e76aaD102acD": "B0x",
+        "0x84a1EC57f0A7fe63E3B87D57B09495216d6e1C0b": "0xBTC",
         // Add more token mappings as needed
     };
+
+
 
 
 
@@ -10079,20 +10130,14 @@ const tokenSwapperABI = [
 
 
 
-        // Staking functions
-        function depositStake() {
-            const amount = document.getElementById('stakeAmount').value;
-            if (!amount || amount <= 0) {
-                alert('Please enter a valid amount to stake.');
-                return;
-            }
-            alert(`Depositing ${amount} tokens for staking! Please confirm in your wallet.`);
-        }
 
         async function withdrawStake() {
 
+            if(!walletConnected){
+               await connectWallet();
+            }
 
-    // Get position data for unclaimed fees
+            disableButtonWithSpinner('withdrawNFTStakeBtn');
     const positionSelect = document.querySelector('#staking-main-page .form-group2 select');
     const selectedPositionId = positionSelect.value;
 
@@ -10151,11 +10196,15 @@ const tokenSwapperABI = [
                         console.log("Staking transaction sent:", stakeTx.hash);
                         await stakeTx.wait(); // Wait for confirmation
                         console.log("NFT withdrew successfully!");
+                            enableButton('withdrawNFTStakeBtn', 'Withraw NFT from Staking');
+                        await getRewardStats();
                         alert("NFT withdrew success!");
                          fetchBalances();
                          getTokenIDsOwnedByMetamask();
                         
                     } catch (error) {
+                            enableButton('withdrawNFTStakeBtn', 'Withraw NFT from Staking');
+
                         console.error("Error approving/staking NFT:", error);
                     }
 
