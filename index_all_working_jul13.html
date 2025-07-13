@@ -2177,6 +2177,7 @@ function populateStakingManagementData() {
 
         // Check if wallet was previously connected
         async function checkWalletConnection() {
+        console.log("This");
         if (typeof window.ethereum !== 'undefined' && localStorage.getItem('walletConnected') === 'true') {
             try {
             const accounts = await window.ethereum.request({
@@ -2213,12 +2214,13 @@ function populateStakingManagementData() {
             method: 'eth_requestAccounts'
             });
             if (accounts.length > 0) {
-            userAddress = accounts[0];
-            walletConnected = true;
             
 
             // Switch to Base Sepolia network
             await switchToBaseSepolia();
+            userAddress = accounts[0];
+            walletConnected = true;
+            
 
             localStorage.setItem('walletConnected', 'true');
             localStorage.setItem('walletAddress', userAddress);
@@ -2679,7 +2681,7 @@ await GetRewardAPY(rewardAddressesStaking, rewardtokenRewardRate, total0xBTCinCo
 document.querySelector('#stakeincrease #tokenAAmount').value = '0';
 document.querySelector('#stakeincrease #tokenBAmount').value = '0';
     }, 500); // Wait for your init code to finish
-        checkWalletConnection();
+        //checkWalletConnection();
         });
     
 
