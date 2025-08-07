@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "name": "uniswap-v4-reader",
+  "version": "1.0.0",
+  "dependencies": {
+    "ethers": "^6.0.0"
+  }
+}
